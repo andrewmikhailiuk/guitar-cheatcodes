@@ -1,0 +1,137 @@
+import { Injectable } from '@angular/core';
+import { EqSettings } from '../models/eq.model';
+import { midiToFrequency } from '../utils/music.utils';
+
+@Injectable({ providedIn: 'root' })
+export class AudioService {
+  private ctx: AudioContext | null = null;
+  private riffTimeout: ReturnType<typeof setTimeout> | null = null;
+  private activeNodes: AudioNode[] = [];
+
+  private getContext(): AudioContext {
+    if (!this.ctx) {
+      this.ctx = new AudioContext();
+    }
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+    return this.ctx;
+  }
+
+  playNote(frequency: number, durationMs = 300): void {
+    const ctx = this.getContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      ctx.currentTime + durationMs / 1000,
+    );
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + durationMs / 1000);
+  }
+
+  playTestRiff(eq: EqSettings): void {
+    this.stopTestRiff();
+
+    const ctx = this.getContext();
+
+    // Build EQ + distortion chain
+    const distortion = ctx.createWaveShaper();
+    distortion.curve = this.makeDistortionCurve(eq.gain);
+
+    const eqLow = this.makePeakingFilter(ctx, 100, eq.low);
+    const eqLowMid = this.makePeakingFilter(ctx, 200, eq.lowMid);
+    const eqHighMid = this.makePeakingFilter(ctx, 3000, eq.highMid);
+    const eqHigh = this.makePeakingFilter(ctx, 6500, eq.high);
+
+    const master = ctx.createGain();
+    master.gain.value = 0.4;
+
+    distortion.connect(eqLow);
+    eqLow.connect(eqLowMid);
+    eqLowMid.connect(eqHighMid);
+    eqHighMid.connect(eqHigh);
+    eqHigh.connect(master);
+    master.connect(ctx.destination);
+
+    this.activeNodes = [distortion, eqLow, eqLowMid, eqHighMid, eqHigh, master];
+
+    // Palm-muted E power chord chugging at ~140 BPM
+    const notes = [40, 40, 47, 40, 40, 40, 47, 52]; // E2, E2, B2, E2, E2, E2, B2, E3
+    const interval = 107; // ~140 BPM 16th notes
+
+    const playAt = (index: number) => {
+      if (index >= notes.length) {
+        this.stopTestRiff();
+        return;
+      }
+
+      const osc = ctx.createOscillator();
+      const env = ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.value = midiToFrequency(notes[index]);
+
+      env.gain.setValueAtTime(0, ctx.currentTime);
+      env.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.005);
+      env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+
+      osc.connect(env);
+      env.connect(distortion);
+
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.1);
+
+      this.riffTimeout = setTimeout(() => playAt(index + 1), interval);
+    };
+
+    playAt(0);
+  }
+
+  stopTestRiff(): void {
+    if (this.riffTimeout !== null) {
+      clearTimeout(this.riffTimeout);
+      this.riffTimeout = null;
+    }
+    for (const node of this.activeNodes) {
+      node.disconnect();
+    }
+    this.activeNodes = [];
+  }
+
+  private makePeakingFilter(
+    ctx: AudioContext,
+    frequency: number,
+    gainDb: number,
+  ): BiquadFilterNode {
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'peaking';
+    filter.frequency.value = frequency;
+    filter.Q.value = 1;
+    filter.gain.value = gainDb;
+    return filter;
+  }
+
+  private makeDistortionCurve(amount: number): Float32Array<ArrayBuffer> {
+    const samples = 256;
+    const curve = new Float32Array(samples) as Float32Array<ArrayBuffer>;
+    const k = amount * 50;
+
+    for (let i = 0; i < samples; i++) {
+      const x = (i * 2) / samples - 1;
+      curve[i] = Math.tanh(k * x);
+    }
+
+    return curve;
+  }
+}

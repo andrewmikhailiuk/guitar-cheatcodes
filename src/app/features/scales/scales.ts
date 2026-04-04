@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
+import { AudioService } from '../../core/services/audio.service';
 import { SCALES } from '../../core/data/scales.data';
 import { CHROMATIC_NOTES } from '../../core/data/notes.data';
 import { ModeName } from '../../core/models/scale.model';
@@ -13,6 +14,7 @@ import { FretNote, NoteName } from '../../core/models/note.model';
 })
 export class ScalesComponent {
   private readonly noteService = inject(NoteService);
+  private readonly audioService = inject(AudioService);
 
   readonly scales = SCALES;
   readonly roots = CHROMATIC_NOTES;
@@ -44,6 +46,6 @@ export class ScalesComponent {
   }
 
   onNoteClick(note: FretNote): void {
-    // Will be wired to AudioService in phase 6
+    this.audioService.playNote(note.frequency);
   }
 }

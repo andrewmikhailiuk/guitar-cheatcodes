@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
+import { AudioService } from '../../core/services/audio.service';
 import { TUNINGS } from '../../core/data/tunings.data';
 import { FretNote } from '../../core/models/note.model';
 
@@ -11,6 +12,7 @@ import { FretNote } from '../../core/models/note.model';
 })
 export class TuningsComponent {
   private readonly noteService = inject(NoteService);
+  private readonly audioService = inject(AudioService);
 
   readonly tunings = TUNINGS;
   readonly selectedTuningId = signal('e-standard');
@@ -36,6 +38,6 @@ export class TuningsComponent {
   }
 
   onNoteClick(note: FretNote): void {
-    // Will be wired to AudioService in phase 6
+    this.audioService.playNote(note.frequency);
   }
 }
