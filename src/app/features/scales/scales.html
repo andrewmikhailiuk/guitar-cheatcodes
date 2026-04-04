@@ -4,11 +4,12 @@
       <label class="block text-xs text-gray-400 mb-1">{{ 'scales.mode' | transloco }}</label>
       <select
         class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-        [value]="selectedMode()"
         (change)="onModeChange($event)"
       >
         @for (scale of scales; track scale.name) {
-          <option [value]="scale.name">{{ scale.labelKey | transloco }}</option>
+          <option [value]="scale.name" [selected]="scale.name === selectedMode()">
+            {{ scale.labelKey | transloco }}
+          </option>
         }
       </select>
     </div>
@@ -17,11 +18,10 @@
       <label class="block text-xs text-gray-400 mb-1">{{ 'scales.root' | transloco }}</label>
       <select
         class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-        [value]="selectedRoot()"
         (change)="onRootChange($event)"
       >
         @for (root of roots; track root) {
-          <option [value]="root">{{ root }}</option>
+          <option [value]="root" [selected]="root === selectedRoot()">{{ root }}</option>
         }
       </select>
     </div>
@@ -30,11 +30,10 @@
       <label class="block text-xs text-gray-400 mb-1">{{ 'tunings.tuning' | transloco }}</label>
       <select
         class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-        [value]="selectedTuningId()"
         (change)="onTuningChange($event)"
       >
         @for (tuning of tunings; track tuning.id) {
-          <option [value]="tuning.id">
+          <option [value]="tuning.id" [selected]="tuning.id === selectedTuningId()">
             {{ tuning.labelKey | transloco }}
           </option>
         }
@@ -45,11 +44,10 @@
       <label class="block text-xs text-gray-400 mb-1">{{ 'scales.box' | transloco }}</label>
       <select
         class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-        [value]="selectedBox()"
         (change)="onBoxChange($event)"
       >
         @for (opt of boxOptions; track opt) {
-          <option [value]="opt">
+          <option [value]="opt" [selected]="opt === selectedBox()">
             {{ opt === 0 ? ('scales.allFrets' | transloco) : ('scales.boxN' | transloco: { n: opt }) }}
           </option>
         }

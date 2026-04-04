@@ -3,11 +3,10 @@
     <label class="block text-xs text-gray-400 mb-1">{{ 'tunings.tuning' | transloco }}</label>
     <select
       class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-      [value]="selectedTuningId()"
       (change)="onTuningChange($event)"
     >
       @for (tuning of tunings; track tuning.id) {
-        <option [value]="tuning.id">
+        <option [value]="tuning.id" [selected]="tuning.id === selectedTuningId()">
           {{ tuning.labelKey | transloco }} ({{ tuning.openStrings.join(' ') }})
         </option>
       }

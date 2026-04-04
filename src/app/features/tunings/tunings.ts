@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
@@ -12,17 +12,13 @@ import { FretNote } from '../../core/models/note.model';
   imports: [FretboardComponent, TranslocoModule],
   templateUrl: './tunings.html',
 })
-export class TuningsComponent implements OnInit {
+export class TuningsComponent {
   private readonly noteService = inject(NoteService);
   private readonly audioService = inject(AudioService);
   private readonly storage = inject(StorageService);
 
   readonly tunings = TUNINGS;
-  readonly selectedTuningId = signal('e-standard');
-
-  ngOnInit(): void {
-    this.selectedTuningId.set(this.storage.get('selectedTuning', 'e-standard'));
-  }
+  readonly selectedTuningId = signal(this.storage.get('selectedTuning', 'e-standard'));
 
   readonly currentTuning = computed(() =>
     TUNINGS.find((t) => t.id === this.selectedTuningId())!,
