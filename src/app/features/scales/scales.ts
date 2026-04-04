@@ -52,7 +52,7 @@ export class ScalesComponent implements OnInit {
     const fb = this.baseFretboard();
     if (box === 0) return fb;
 
-    const boxNotes = this.noteService.compute3NPSBox(
+    const boxNotes = this.noteService.computeBox(
       this.currentScale().intervals,
       noteNameToIndex(this.selectedRoot()),
       box - 1,
