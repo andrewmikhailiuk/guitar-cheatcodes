@@ -4,7 +4,8 @@ export type ModeName =
   | 'locrian'
   | 'ionian'
   | 'aeolian'
-  | 'mixolydian';
+  | 'mixolydian'
+  | 'lydian';
 
 export interface ScaleDefinition {
   name: ModeName;

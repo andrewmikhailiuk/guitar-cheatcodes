@@ -16,6 +16,7 @@
     "ionian": "Ionian",
     "aeolian": "Aeolian",
     "mixolydian": "Mixolydian",
+    "lydian": "Lydian",
     "box": "Box",
     "allFrets": "All",
     "boxN": "Box {{n}}",

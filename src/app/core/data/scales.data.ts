@@ -7,4 +7,5 @@ export const SCALES: ScaleDefinition[] = [
   { name: 'ionian',      labelKey: 'scales.ionian',      intervals: [0, 2, 4, 5, 7, 9, 11], defaultRoot: 'C' },
   { name: 'aeolian',     labelKey: 'scales.aeolian',     intervals: [0, 2, 3, 5, 7, 8, 10], defaultRoot: 'A' },
   { name: 'mixolydian',  labelKey: 'scales.mixolydian',  intervals: [0, 2, 4, 5, 7, 9, 10], defaultRoot: 'G' },
+  { name: 'lydian',      labelKey: 'scales.lydian',      intervals: [0, 2, 4, 6, 7, 9, 11], defaultRoot: 'F' },
 ];
