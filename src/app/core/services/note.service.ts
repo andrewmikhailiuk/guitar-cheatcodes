@@ -87,13 +87,15 @@ export class NoteService {
     });
 
     // Find anchor: first occurrence of starting degree on lowest string
-    let nextDeg = boxNumber - 1;
+    const startDeg = boxNumber - 1;
+    let nextDeg = startDeg;
     const anchor = strings[0].find((n) => n.deg === nextDeg);
     if (!anchor) return box;
 
     let handPos = anchor.fret;
+    let done = false;
 
-    for (let s = 0; s < strings.length; s++) {
+    for (let s = 0; s < strings.length && !done; s++) {
       const notes = strings[s];
 
       // Find starting note: degree nextDeg, closest to handPos
@@ -113,6 +115,12 @@ export class NoteService {
         if (n.fret - startFret > 3) break;
         box.add(`${s}-${n.fret}`);
         nextDeg = (n.deg + 1) % scaleIntervals.length;
+
+        // Stop when we return to the starting degree (box complete)
+        if (n.deg === startDeg && s > 0) {
+          done = true;
+          break;
+        }
       }
 
       handPos = startFret;
