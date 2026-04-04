@@ -1,0 +1,68 @@
+import { Component, computed, input, output } from '@angular/core';
+import { FretNote, NoteRole } from '../../core/models/note.model';
+import { FRET_MARKERS, DOUBLE_DOT_FRETS } from '../../core/data/notes.data';
+
+@Component({
+  selector: 'app-fretboard',
+  templateUrl: './fretboard.html',
+  styleUrl: './fretboard.css',
+})
+export class FretboardComponent {
+  readonly fretboard = input.required<FretNote[][]>();
+  readonly stringLabels = input.required<string[]>();
+  readonly totalFrets = input(24);
+
+  readonly noteClicked = output<FretNote>();
+
+  readonly fretRange = computed(() =>
+    Array.from({ length: this.totalFrets() + 1 }, (_, i) => i),
+  );
+
+  readonly gridColumns = computed(
+    () => `40px repeat(${this.totalFrets()}, minmax(28px, 1fr))`,
+  );
+
+  isMarkerFret(fret: number): boolean {
+    return FRET_MARKERS.includes(fret);
+  }
+
+  isDoubleDot(fret: number): boolean {
+    return DOUBLE_DOT_FRETS.includes(fret);
+  }
+
+  noteColor(role: NoteRole): string {
+    switch (role) {
+      case 'root':
+        return 'var(--color-note-root)';
+      case 'tritone':
+      case 'minorSecond':
+        return 'var(--color-note-tritone)';
+      case 'scale':
+        return 'var(--color-note-scale)';
+      case 'neutral':
+        return 'var(--color-note-neutral)';
+      case 'nonScale':
+      default:
+        return 'var(--color-note-non-scale)';
+    }
+  }
+
+  noteTextColor(role: NoteRole): string {
+    switch (role) {
+      case 'root':
+      case 'tritone':
+      case 'minorSecond':
+        return '#fff';
+      case 'scale':
+      case 'neutral':
+        return '#ddd';
+      case 'nonScale':
+      default:
+        return '#555';
+    }
+  }
+
+  onNoteClick(note: FretNote): void {
+    this.noteClicked.emit(note);
+  }
+}

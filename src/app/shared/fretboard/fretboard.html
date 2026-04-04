@@ -1,0 +1,46 @@
+<div class="fretboard-wrapper overflow-x-auto pb-2">
+  <!-- Fret numbers -->
+  <div class="fret-numbers" [style.grid-template-columns]="gridColumns()">
+    <span class="label-spacer"></span>
+    @for (fret of fretRange(); track fret) {
+      <span
+        class="fret-num"
+        [class.has-marker]="isMarkerFret(fret)"
+      >
+        {{ fret === 0 ? '' : fret }}
+      </span>
+    }
+  </div>
+
+  <!-- Fretboard grid -->
+  <div class="fretboard-grid" [style.grid-template-columns]="gridColumns()">
+    @for (string of fretboard(); track $index) {
+      <span class="string-label">{{ stringLabels()[$index] }}</span>
+
+      @for (note of string; track $index) {
+        <button
+          class="fret-cell"
+          [style.background-color]="noteColor(note.role)"
+          [style.color]="noteTextColor(note.role)"
+          (click)="onNoteClick(note)"
+        >
+          {{ note.name }}
+        </button>
+      }
+    }
+  </div>
+
+  <!-- Fret markers -->
+  <div class="fret-markers" [style.grid-template-columns]="gridColumns()">
+    <span class="label-spacer"></span>
+    @for (fret of fretRange(); track fret) {
+      <span class="marker-cell">
+        @if (isDoubleDot(fret)) {
+          <span class="dot"></span><span class="dot"></span>
+        } @else if (isMarkerFret(fret)) {
+          <span class="dot"></span>
+        }
+      </span>
+    }
+  </div>
+</div>
