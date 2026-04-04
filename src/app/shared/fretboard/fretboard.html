@@ -13,13 +13,15 @@
   </div>
 
   <!-- Fretboard grid -->
-  <div class="fretboard-grid" [style.grid-template-columns]="gridColumns()">
-    @for (string of fretboard(); track $index) {
-      <span class="string-label">{{ stringLabels()[$index] }}</span>
+  <div class="fretboard-grid" [style.grid-template-columns]="gridColumns()" role="grid" aria-label="Fretboard">
+    @for (string of fretboard(); track $index; let si = $index) {
+      <span class="string-label" role="rowheader">{{ stringLabels()[si] }}</span>
 
-      @for (note of string; track $index) {
+      @for (note of string; track $index; let fi = $index) {
         <button
           class="fret-cell"
+          role="gridcell"
+          [attr.aria-label]="note.name + (fi === 0 ? ' open' : ' fret ' + fi) + ', string ' + (si + 1)"
           [style.background-color]="noteColor(note.role)"
           [style.color]="noteTextColor(note.role)"
           (click)="onNoteClick(note)"
