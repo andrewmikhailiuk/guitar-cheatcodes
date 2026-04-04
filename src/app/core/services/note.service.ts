@@ -55,10 +55,14 @@ export class NoteService {
   }
 
   /**
-   * Compute a positional box using sequential degree assignment.
-   * Box N starts on degree N (1=root) on the lowest string.
-   * Each string continues the scale sequence, taking 2-3 notes
-   * within a 3-fret span from the first note on that string.
+   * Compute a positional box pattern.
+   *
+   * Algorithm:
+   * - Box N starts from scale degree N on the lowest string
+   * - Each string takes 2-3 ascending scale notes within 4 fret positions
+   *   (index-middle-ring-pinky, max span = 3 frets)
+   * - The next string continues from the next degree in sequence
+   * - This keeps the hand in one position on the neck
    */
   computeBox(
     scaleIntervals: number[],
@@ -68,66 +72,50 @@ export class NoteService {
     totalFrets: number,
   ): Set<string> {
     const box = new Set<string>();
-    const numDegrees = scaleIntervals.length;
 
-    let currentDegreeIdx = boxNumber - 1;
-
-    // Find starting fret on lowest string
-    const targetInterval = scaleIntervals[currentDegreeIdx];
-    let refFret = -1;
-    for (let f = 0; f <= totalFrets; f++) {
-      const interval =
-        (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
-      if (interval === targetInterval) {
-        refFret = f;
-        break;
-      }
-    }
-    if (refFret < 0) return box;
-
-    for (let s = 0; s < openStringMidis.length; s++) {
-      const openMidi = openStringMidis[s];
-
-      // Find fret of currentDegree on this string, closest to refFret
-      const degreeInterval = scaleIntervals[currentDegreeIdx];
-      let startFret = -1;
-      let bestDist = Infinity;
+    // Build scale notes per string: { fret, degreeIndex }
+    const strings = openStringMidis.map((openMidi) => {
+      const notes: { fret: number; deg: number }[] = [];
       for (let f = 0; f <= totalFrets; f++) {
         const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
-        if (interval === degreeInterval) {
-          const dist = Math.abs(f - refFret);
-          if (dist < bestDist) {
-            bestDist = dist;
-            startFret = f;
-          }
+        const deg = scaleIntervals.indexOf(interval);
+        if (deg >= 0) {
+          notes.push({ fret: f, deg });
+        }
+      }
+      return notes;
+    });
+
+    // Find anchor: first occurrence of starting degree on lowest string
+    let nextDeg = boxNumber - 1;
+    const anchor = strings[0].find((n) => n.deg === nextDeg);
+    if (!anchor) return box;
+
+    let handPos = anchor.fret;
+
+    for (let s = 0; s < strings.length; s++) {
+      const notes = strings[s];
+
+      // Find starting note: degree nextDeg, closest to handPos
+      let startFret = -1;
+      let bestDist = Infinity;
+      for (const n of notes) {
+        if (n.deg === nextDeg && Math.abs(n.fret - handPos) < bestDist) {
+          bestDist = Math.abs(n.fret - handPos);
+          startFret = n.fret;
         }
       }
       if (startFret < 0) continue;
 
-      // Take consecutive scale notes within 3-fret span from startFret
-      box.add(`${s}-${startFret}`);
-      let lastDegIdx = currentDegreeIdx;
-
-      let nextDegIdx = (currentDegreeIdx + 1) % numDegrees;
-      while (true) {
-        const nextInterval = scaleIntervals[nextDegIdx];
-        let nextFret = -1;
-        for (let f = startFret + 1; f <= totalFrets; f++) {
-          const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
-          if (interval === nextInterval) {
-            nextFret = f;
-            break;
-          }
-        }
-        if (nextFret < 0 || nextFret - startFret > 3) break;
-
-        box.add(`${s}-${nextFret}`);
-        lastDegIdx = nextDegIdx;
-        nextDegIdx = (nextDegIdx + 1) % numDegrees;
+      // Take ascending scale notes within 3-fret span from startFret
+      for (const n of notes) {
+        if (n.fret < startFret) continue;
+        if (n.fret - startFret > 3) break;
+        box.add(`${s}-${n.fret}`);
+        nextDeg = (n.deg + 1) % scaleIntervals.length;
       }
 
-      currentDegreeIdx = (lastDegIdx + 1) % numDegrees;
-      refFret = startFret;
+      handPos = startFret;
     }
 
     return box;
