@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
@@ -21,7 +21,7 @@ import { noteNameToIndex } from '../../core/utils/music.utils';
   imports: [FretboardComponent, TranslocoModule],
   templateUrl: './scales.html',
 })
-export class ScalesComponent implements OnInit {
+export class ScalesComponent {
   private readonly noteService = inject(NoteService);
   private readonly audioService = inject(AudioService);
   private readonly storage = inject(StorageService);
@@ -31,19 +31,14 @@ export class ScalesComponent implements OnInit {
   readonly tunings = TUNINGS;
   readonly boxOptions = [0, 1, 2, 3, 4, 5];
 
-  readonly selectedMode = signal<ModeName>('phrygian');
-  readonly selectedRoot = signal<NoteName>('E');
-  readonly selectedBox = signal(0);
-  readonly selectedTuningId = signal('e-standard');
+  private readonly initMode = this.storage.get<ModeName>('selectedMode', 'phrygian');
 
-  ngOnInit(): void {
-    const mode = this.storage.get<ModeName>('selectedMode', 'phrygian');
-    const scale = SCALES.find((s) => s.name === mode)!;
-    this.selectedMode.set(mode);
-    this.selectedRoot.set(scale.defaultRoot as NoteName);
-    this.selectedBox.set(this.storage.get<number>('selectedBox', 0));
-    this.selectedTuningId.set(this.storage.get('scaleTuning', 'e-standard'));
-  }
+  readonly selectedMode = signal<ModeName>(this.initMode);
+  readonly selectedRoot = signal<NoteName>(
+    (SCALES.find((s) => s.name === this.initMode)?.defaultRoot ?? 'E') as NoteName,
+  );
+  readonly selectedBox = signal(this.storage.get<number>('selectedBox', 0));
+  readonly selectedTuningId = signal(this.storage.get('scaleTuning', 'e-standard'));
 
   readonly currentScale = computed(() =>
     SCALES.find((s) => s.name === this.selectedMode())!,
