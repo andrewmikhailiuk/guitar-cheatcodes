@@ -67,7 +67,9 @@
   },
   "cheat": {
     "notes": "Ноты",
+    "solfege": "Сольфеджио",
     "formula": "Формула",
+    "intervals": "Интервалы",
     "character": "Характер"
   },
   "character": {

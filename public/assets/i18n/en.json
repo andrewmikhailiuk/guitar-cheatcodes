@@ -67,7 +67,9 @@
   },
   "cheat": {
     "notes": "Notes",
+    "solfege": "Solfege",
     "formula": "Formula",
+    "intervals": "Intervals",
     "character": "Character"
   },
   "character": {
