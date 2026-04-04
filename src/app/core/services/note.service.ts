@@ -55,9 +55,9 @@ export class NoteService {
   }
 
   /**
-   * Compute a 3NPS box. Box N starts on scale degree N (1=root) on the
-   * lowest string. Each string continues the scale from where the previous
-   * string left off, always 3 notes per string.
+   * Compute a positional box. Box N starts on scale degree N (1=root) on
+   * the lowest string. Window: [anchorFret-1, anchorFret+3] — 5 frets
+   * with index finger stretch. Gives 2-3 notes per string.
    */
   computeBox(
     scaleIntervals: number[],
@@ -67,54 +67,33 @@ export class NoteService {
     totalFrets: number,
   ): Set<string> {
     const box = new Set<string>();
-    const numDegrees = scaleIntervals.length;
-    const startDegreeIdx = boxNumber - 1; // box 1 → degree 0 (root)
+    const startDegreeIdx = boxNumber - 1;
 
-    // For each string, build fret → degreeIdx mapping
-    const stringNotes: { fret: number; degreeIdx: number }[][] =
-      openStringMidis.map((openMidi) => {
-        const notes: { fret: number; degreeIdx: number }[] = [];
-        for (let f = 0; f <= totalFrets; f++) {
-          const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
-          const idx = scaleIntervals.indexOf(interval);
-          if (idx >= 0) {
-            notes.push({ fret: f, degreeIdx: idx });
-          }
-        }
-        return notes;
-      });
+    // Find anchor fret: where startDegree falls on the lowest string
+    let anchorFret = -1;
+    const targetInterval = scaleIntervals[startDegreeIdx];
+    for (let f = 0; f <= totalFrets; f++) {
+      const interval =
+        (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
+      if (interval === targetInterval) {
+        anchorFret = f;
+        break;
+      }
+    }
+    if (anchorFret < 0) return box;
 
-    // Find starting fret on lowest string
-    const firstHit = stringNotes[0].find((n) => n.degreeIdx === startDegreeIdx);
-    if (!firstHit) return box;
-
-    let currentDegreeIdx = startDegreeIdx;
-    let refFret = firstHit.fret;
+    // 5-fret window: index finger stretch back + 4 frets forward
+    const windowStart = Math.max(0, anchorFret - 1);
+    const windowEnd = anchorFret + 3;
 
     for (let s = 0; s < openStringMidis.length; s++) {
-      const notes = stringNotes[s];
-
-      // Find the note with currentDegreeIdx closest to refFret
-      let bestIdx = -1;
-      let bestDist = Infinity;
-      for (let i = 0; i < notes.length; i++) {
-        if (notes[i].degreeIdx === currentDegreeIdx) {
-          const dist = Math.abs(notes[i].fret - refFret);
-          if (dist < bestDist) {
-            bestDist = dist;
-            bestIdx = i;
-          }
+      const openMidi = openStringMidis[s];
+      for (let f = windowStart; f <= windowEnd && f <= totalFrets; f++) {
+        const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
+        if (scaleIntervals.includes(interval)) {
+          box.add(`${s}-${f}`);
         }
       }
-
-      if (bestIdx < 0 || bestIdx + 2 >= notes.length) continue;
-
-      for (let n = 0; n < 3; n++) {
-        box.add(`${s}-${notes[bestIdx + n].fret}`);
-      }
-
-      refFret = notes[bestIdx].fret;
-      currentDegreeIdx = (currentDegreeIdx + 3) % numDegrees;
     }
 
     return box;
