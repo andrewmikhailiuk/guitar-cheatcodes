@@ -22,7 +22,8 @@
     "box": "Бокс",
     "allFrets": "Все",
     "boxN": "Бокс {{n}}",
-    "tritones": "Тритоны",
+    "tritonesOn": "Тритоны вкл",
+    "tritonesOff": "Тритоны выкл",
     "reset": "Сброс"
   },
   "gammas": {

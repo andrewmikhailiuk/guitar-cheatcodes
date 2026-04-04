@@ -61,7 +61,7 @@
         : 'border-fret-line hover:bg-fret-line'"
       (click)="showTritones.set(!showTritones())"
     >
-      {{ 'scales.tritones' | transloco }}
+      {{ showTritones() ? ('scales.tritonesOn' | transloco) : ('scales.tritonesOff' | transloco) }}
     </button>
 
     <button
