@@ -55,9 +55,11 @@ export class NoteService {
   }
 
   /**
-   * Compute a positional box. Box N starts on scale degree N (1=root) on
-   * the lowest string. Window: [anchorFret-1, anchorFret+3] — 5 frets
-   * with index finger stretch. Gives 2-3 notes per string.
+   * Compute a positional box using sequential degree assignment.
+   * Box N starts on degree N (1=root) on the lowest string.
+   * Each string continues the scale sequence, taking 2-3 notes within
+   * a 4-fret reach. Stops after 2 full octaves + root (15 notes for
+   * a 7-note scale), so boxes don't overlap.
    */
   computeBox(
     scaleIntervals: number[],
@@ -67,33 +69,70 @@ export class NoteService {
     totalFrets: number,
   ): Set<string> {
     const box = new Set<string>();
-    const startDegreeIdx = boxNumber - 1;
+    const numDegrees = scaleIntervals.length;
+    const maxNotes = numDegrees * 2 + 1;
+    let totalNotes = 0;
 
-    // Find anchor fret: where startDegree falls on the lowest string
-    let anchorFret = -1;
-    const targetInterval = scaleIntervals[startDegreeIdx];
+    let currentDegreeIdx = boxNumber - 1;
+
+    // Find starting fret on lowest string
+    const targetInterval = scaleIntervals[currentDegreeIdx];
+    let refFret = -1;
     for (let f = 0; f <= totalFrets; f++) {
       const interval =
         (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
       if (interval === targetInterval) {
-        anchorFret = f;
+        refFret = f;
         break;
       }
     }
-    if (anchorFret < 0) return box;
+    if (refFret < 0) return box;
 
-    // 5-fret window: index finger stretch back + 4 frets forward
-    const windowStart = Math.max(0, anchorFret - 1);
-    const windowEnd = anchorFret + 3;
-
-    for (let s = 0; s < openStringMidis.length; s++) {
+    for (let s = 0; s < openStringMidis.length && totalNotes < maxNotes; s++) {
       const openMidi = openStringMidis[s];
-      for (let f = windowStart; f <= windowEnd && f <= totalFrets; f++) {
+
+      // Find fret of currentDegree on this string, closest to refFret
+      const degreeInterval = scaleIntervals[currentDegreeIdx];
+      let startFret = -1;
+      let bestDist = Infinity;
+      for (let f = 0; f <= totalFrets; f++) {
         const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
-        if (scaleIntervals.includes(interval)) {
-          box.add(`${s}-${f}`);
+        if (interval === degreeInterval) {
+          const dist = Math.abs(f - refFret);
+          if (dist < bestDist) {
+            bestDist = dist;
+            startFret = f;
+          }
         }
       }
+      if (startFret < 0) continue;
+
+      // Take consecutive scale notes within 3-fret span from startFret
+      box.add(`${s}-${startFret}`);
+      totalNotes++;
+      let lastDegIdx = currentDegreeIdx;
+
+      let nextDegIdx = (currentDegreeIdx + 1) % numDegrees;
+      while (totalNotes < maxNotes) {
+        const nextInterval = scaleIntervals[nextDegIdx];
+        let nextFret = -1;
+        for (let f = startFret + 1; f <= totalFrets; f++) {
+          const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
+          if (interval === nextInterval) {
+            nextFret = f;
+            break;
+          }
+        }
+        if (nextFret < 0 || nextFret - startFret > 3) break;
+
+        box.add(`${s}-${nextFret}`);
+        totalNotes++;
+        lastDegIdx = nextDegIdx;
+        nextDegIdx = (nextDegIdx + 1) % numDegrees;
+      }
+
+      currentDegreeIdx = (lastDegIdx + 1) % numDegrees;
+      refFret = startFret;
     }
 
     return box;
