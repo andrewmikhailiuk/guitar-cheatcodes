@@ -1,7 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FretboardComponent } from '../../shared/fretboard/fretboard';
+import { NoteService } from '../../core/services/note.service';
+import { TUNINGS } from '../../core/data/tunings.data';
+import { FretNote } from '../../core/models/note.model';
 
 @Component({
   selector: 'app-tunings',
-  template: `<h2 class="text-xl p-4">Tunings</h2>`,
+  imports: [FretboardComponent],
+  templateUrl: './tunings.html',
 })
-export class TuningsComponent {}
+export class TuningsComponent {
+  private readonly noteService = inject(NoteService);
+
+  readonly tunings = TUNINGS;
+  readonly selectedTuningId = signal('e-standard');
+
+  readonly currentTuning = computed(() =>
+    TUNINGS.find((t) => t.id === this.selectedTuningId())!,
+  );
+
+  readonly fretboard = computed(() => {
+    const tuning = this.currentTuning();
+    return this.noteService.buildFretboard(
+      tuning.stringCount,
+      tuning.offsets,
+    );
+  });
+
+  readonly stringLabels = computed(() =>
+    this.currentTuning().openStrings as string[],
+  );
+
+  onTuningChange(event: Event): void {
+    this.selectedTuningId.set((event.target as HTMLSelectElement).value);
+  }
+
+  onNoteClick(note: FretNote): void {
+    // Will be wired to AudioService in phase 6
+  }
+}
