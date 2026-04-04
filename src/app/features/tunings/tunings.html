@@ -19,27 +19,19 @@
     (noteClicked)="onNoteClick($event)"
   />
 
-  <div class="mt-3 space-y-2 px-4">
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-      <span class="text-gray-400">{{ 'cheat.noteNames' | transloco }}:</span>
-      <span class="font-mono text-sm text-text-primary">
-        C<span class="text-gray-400 text-xs ml-0.5">До</span>
-        <span class="text-fret-line mx-1">·</span>
-        D<span class="text-gray-400 text-xs ml-0.5">Ре</span>
-        <span class="text-fret-line mx-1">·</span>
-        E<span class="text-gray-400 text-xs ml-0.5">Ми</span>
-        <span class="text-fret-line mx-1">·</span>
-        F<span class="text-gray-400 text-xs ml-0.5">Фа</span>
-        <span class="text-fret-line mx-1">·</span>
-        G<span class="text-gray-400 text-xs ml-0.5">Соль</span>
-        <span class="text-fret-line mx-1">·</span>
-        A<span class="text-gray-400 text-xs ml-0.5">Ля</span>
-        <span class="text-fret-line mx-1">·</span>
-        B<span class="text-gray-400 text-xs ml-0.5">Си</span>
-      </span>
+  <div class="mt-3 space-y-3 px-4">
+    <div class="flex flex-wrap items-center gap-1.5">
+      <span class="text-xs text-gray-400 mr-1">{{ 'cheat.noteNames' | transloco }}:</span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">C <span class="text-xs text-gray-400">До</span></span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">D <span class="text-xs text-gray-400">Ре</span></span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">E <span class="text-xs text-gray-400">Ми</span></span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">F <span class="text-xs text-gray-400">Фа</span></span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">G <span class="text-xs text-gray-400">Соль</span></span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">A <span class="text-xs text-gray-400">Ля</span></span>
+      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">B <span class="text-xs text-gray-400">Си</span></span>
     </div>
-    <p class="text-xs text-gray-400 leading-relaxed">
+    <blockquote class="text-xs text-gray-400 leading-relaxed border-l-2 border-fret-line pl-3 italic">
       {{ 'cheat.whyC' | transloco }}
-    </p>
+    </blockquote>
   </div>
 </div>
