@@ -55,6 +55,16 @@
     </div>
 
     <button
+      class="self-end px-3 py-2 text-sm border rounded transition-colors"
+      [class]="showTritones()
+        ? 'border-note-tritone/50 bg-note-tritone/10 text-note-tritone'
+        : 'border-fret-line hover:bg-fret-line'"
+      (click)="showTritones.set(!showTritones())"
+    >
+      {{ 'scales.tritones' | transloco }}
+    </button>
+
+    <button
       class="self-end px-3 py-2 text-sm border border-fret-line rounded hover:bg-fret-line transition-colors"
       (click)="resetFilters()"
     >
@@ -66,6 +76,7 @@
     [fretboard]="fretboard()"
     [stringLabels]="stringLabels()"
     [showDegrees]="selectedBox() !== 0"
+    [highlightTritones]="showTritones()"
     (noteClicked)="onNoteClick($event)"
   />
 

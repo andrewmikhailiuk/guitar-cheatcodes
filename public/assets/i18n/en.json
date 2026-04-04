@@ -22,6 +22,7 @@
     "box": "Box",
     "allFrets": "All",
     "boxN": "Box {{n}}",
+    "tritones": "Tritones",
     "reset": "Reset"
   },
   "gammas": {

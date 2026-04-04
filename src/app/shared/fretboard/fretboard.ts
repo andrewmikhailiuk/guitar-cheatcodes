@@ -12,6 +12,7 @@ export class FretboardComponent {
   readonly stringLabels = input.required<string[]>();
   readonly totalFrets = input(24);
   readonly showDegrees = input(false);
+  readonly highlightTritones = input(true);
 
   readonly noteClicked = output<FretNote>();
 
@@ -46,7 +47,9 @@ export class FretboardComponent {
         return 'var(--color-note-root)';
       case 'tritone':
       case 'minorSecond':
-        return 'var(--color-note-tritone)';
+        return this.highlightTritones()
+          ? 'var(--color-note-tritone)'
+          : 'var(--color-note-scale)';
       case 'scale':
         return 'var(--color-note-scale)';
       case 'neutral':
@@ -62,9 +65,10 @@ export class FretboardComponent {
   noteTextColor(role: NoteRole): string {
     switch (role) {
       case 'root':
+        return '#fff';
       case 'tritone':
       case 'minorSecond':
-        return '#fff';
+        return this.highlightTritones() ? '#fff' : '#ddd';
       case 'scale':
       case 'neutral':
         return '#ddd';

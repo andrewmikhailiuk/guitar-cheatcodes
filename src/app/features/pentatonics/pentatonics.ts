@@ -39,6 +39,7 @@ export class PentatonicsComponent {
   );
   readonly selectedBox = signal(this.storage.get<number>('pentaBox', 0));
   readonly selectedTuningId = signal(this.storage.get('pentaTuning', 'e-standard'));
+  readonly showTritones = signal(true);
 
   readonly currentPenta = computed(() =>
     PENTATONICS.find((p) => p.name === this.selectedPenta())!,
