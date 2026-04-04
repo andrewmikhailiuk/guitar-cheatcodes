@@ -7,71 +7,65 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
   selector: 'app-cheat-sheet',
   imports: [TranslocoModule],
   template: `
-    <div class="mt-4 space-y-3">
-      <!-- Scale info -->
-      <div class="p-4 bg-bg-fretboard rounded-lg border border-fret-line space-y-3">
-        <div class="flex items-start gap-3">
-          <span class="text-xs text-gray-500 uppercase tracking-wider w-20 shrink-0 pt-1">
-            {{ 'cheat.notes' | transloco }}
-          </span>
-          <div class="flex flex-wrap gap-1.5">
-            @for (note of noteList(); track note; let i = $index) {
-              <span
-                class="px-2 py-0.5 rounded font-mono text-sm"
-                [class]="i === 0
-                  ? 'bg-note-root/20 text-note-root border border-note-root/30'
-                  : 'bg-fret-line/30 text-text-primary border border-fret-line/50'"
-              >
-                {{ note }}
-              </span>
+    <div class="mt-3 space-y-2 px-4">
+      <!-- Compact info line -->
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+        <span class="text-gray-500">{{ 'cheat.notes' | transloco }}:</span>
+        <span class="font-mono text-sm">
+          @for (note of noteList(); track note; let i = $index) {
+            <span [class]="i === 0 ? 'text-note-root font-bold' : 'text-text-primary'">{{ note }}</span>
+            @if (i < noteList().length - 1) {
+              <span class="text-fret-line mx-0.5">·</span>
             }
-          </div>
-        </div>
+          }
+        </span>
 
-        <div class="flex items-start gap-3">
-          <span class="text-xs text-gray-500 uppercase tracking-wider w-20 shrink-0 pt-1">
-            {{ 'cheat.formula' | transloco }}
-          </span>
-          <div class="flex flex-wrap gap-1.5">
-            @for (sym of formulaSymbols(); track sym) {
-              <span
-                class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm cursor-pointer hover:border-note-root/50 transition-colors"
-                (click)="flashInterval(sym)"
-              >
-                {{ sym }}
-              </span>
+        <span class="text-fret-line">|</span>
+
+        <span class="text-gray-500">{{ 'cheat.formula' | transloco }}:</span>
+        <span class="font-mono text-sm">
+          @for (sym of formulaSymbols(); track sym) {
+            <span
+              class="cursor-pointer hover:text-note-root transition-colors"
+              (click)="flashInterval(sym)"
+            >{{ sym }}</span>
+            @if (!$last) {
+              <span class="text-fret-line mx-0.5">·</span>
             }
-          </div>
-        </div>
+          }
+        </span>
 
         @if (characterKey()) {
-          <div class="flex items-start gap-3">
-            <span class="text-xs text-gray-500 uppercase tracking-wider w-20 shrink-0 pt-0.5">
-              {{ 'cheat.character' | transloco }}
-            </span>
-            <span class="text-sm text-gray-400 italic">{{ characterKey()! | transloco }}</span>
-          </div>
+          <span class="text-fret-line">|</span>
+          <span class="text-gray-500 italic">{{ characterKey()! | transloco }}</span>
         }
       </div>
 
-      <!-- Interval reference -->
-      <div class="p-4 bg-bg-fretboard rounded-lg border border-fret-line">
-        <span class="text-xs text-gray-500 uppercase tracking-wider">{{ 'cheat.intervalRef' | transloco }}</span>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-          @for (item of intervalRef; track item.symbol) {
-            <div
-              class="flex items-start gap-3 p-2 rounded border transition-all duration-200"
-              [class]="flashedInterval() === item.symbol
-                ? 'bg-note-root/20 border-note-root/50 animate-pulse'
-                : 'bg-fret-line/20 border-fret-line/50'"
-            >
-              <span class="font-mono font-bold text-sm text-note-root bg-note-root/15 rounded px-2 py-0.5 shrink-0 w-8 text-center">
-                {{ item.symbol }}
-              </span>
-              <span class="text-xs text-gray-400 leading-relaxed">{{ item.nameKey | transloco }}</span>
-            </div>
-          }
-        </div>
+      <!-- Collapsible interval reference -->
+      <div>
+        <button
+          class="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+          (click)="showRef.set(!showRef())"
+        >
+          {{ 'cheat.intervalRef' | transloco }}
+          {{ showRef() ? '▾' : '▸' }}
+        </button>
+
+        @if (showRef()) {
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 mt-2">
+            @for (item of intervalRef; track item.symbol) {
+              <div
+                class="flex items-center gap-2 px-2 py-1 rounded text-xs transition-all duration-200"
+                [class]="flashedInterval() === item.symbol
+                  ? 'bg-note-root/20 text-note-root'
+                  : 'bg-fret-line/10 text-gray-500'"
+              >
+                <span class="font-mono font-bold text-text-primary w-5">{{ item.symbol }}</span>
+                <span>{{ item.nameKey | transloco }}</span>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
   `,
@@ -81,6 +75,7 @@ export class CheatSheetComponent {
   readonly intervals = input.required<number[]>();
   readonly characterKey = input<string | undefined>();
 
+  readonly showRef = signal(false);
   readonly flashedInterval = signal<string | null>(null);
 
   readonly noteList = computed(() =>
@@ -92,6 +87,7 @@ export class CheatSheetComponent {
   );
 
   flashInterval(symbol: string): void {
+    this.showRef.set(true);
     this.flashedInterval.set(symbol);
     setTimeout(() => this.flashedInterval.set(null), 1500);
   }
