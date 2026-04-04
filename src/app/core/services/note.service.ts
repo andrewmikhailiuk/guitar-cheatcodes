@@ -55,35 +55,40 @@ export class NoteService {
   }
 
   /**
-   * Compute a positional box: all scale notes within a 5-fret window.
-   * The window is anchored at the fret of startDegree on the lowest string.
-   * Returns a Set of "stringIndex-fretIndex" keys for notes in the box.
+   * Compute a positional box: all scale notes within a 4-fret window.
+   * Boxes are numbered by fret order on the lowest string (lowest first).
+   * boxNumber is 1-based (1 = lowest position on the neck).
    */
   computeBox(
     scaleIntervals: number[],
     rootIndex: number,
-    startDegree: number,
+    boxNumber: number,
     openStringMidis: number[],
     totalFrets: number,
   ): Set<string> {
     const box = new Set<string>();
 
-    // Find anchor fret: where startDegree falls on the lowest string
-    const targetInterval = scaleIntervals[startDegree];
-    let anchorFret = -1;
+    // Find all scale notes on the lowest string (first occurrence of each degree)
+    const lowestStringNotes: { fret: number; degreeIdx: number }[] = [];
+    const seen = new Set<number>();
     for (let f = 0; f <= totalFrets; f++) {
       const interval =
         (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
-      if (interval === targetInterval) {
-        anchorFret = f;
-        break;
+      const idx = scaleIntervals.indexOf(interval);
+      if (idx >= 0 && !seen.has(idx)) {
+        seen.add(idx);
+        lowestStringNotes.push({ fret: f, degreeIdx: idx });
       }
+      if (seen.size === scaleIntervals.length) break;
     }
-    if (anchorFret < 0) return box;
+    lowestStringNotes.sort((a, b) => a.fret - b.fret);
 
-    // 5-fret window centered on anchor
-    const windowStart = Math.max(0, anchorFret - 2);
-    const windowEnd = windowStart + 4;
+    const startNote = lowestStringNotes[boxNumber - 1];
+    if (!startNote) return box;
+
+    // 4-fret window: anchorFret to anchorFret + 3
+    const windowStart = startNote.fret;
+    const windowEnd = windowStart + 3;
 
     for (let s = 0; s < openStringMidis.length; s++) {
       const openMidi = openStringMidis[s];

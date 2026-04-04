@@ -55,7 +55,7 @@ export class ScalesComponent implements OnInit {
     const boxNotes = this.noteService.computeBox(
       this.currentScale().intervals,
       noteNameToIndex(this.selectedRoot()),
-      box - 1,
+      box,
       E_STANDARD_MIDI,
       TOTAL_FRETS,
     );
