@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { NoteName } from '../../core/models/note.model';
 import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils';
@@ -34,7 +34,10 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
           </span>
           <div class="flex flex-wrap gap-1.5">
             @for (sym of formulaSymbols(); track sym) {
-              <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">
+              <span
+                class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm cursor-pointer hover:border-note-root/50 transition-colors"
+                (click)="flashInterval(sym)"
+              >
                 {{ sym }}
               </span>
             }
@@ -56,7 +59,12 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
         <span class="text-xs text-gray-500 uppercase tracking-wider">{{ 'cheat.intervalRef' | transloco }}</span>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3">
           @for (item of intervalRef; track item.symbol) {
-            <div class="flex items-start gap-3 p-2 rounded bg-fret-line/20 border border-fret-line/50">
+            <div
+              class="flex items-start gap-3 p-2 rounded border transition-all duration-200"
+              [class]="flashedInterval() === item.symbol
+                ? 'bg-note-root/20 border-note-root/50 animate-pulse'
+                : 'bg-fret-line/20 border-fret-line/50'"
+            >
               <span class="font-mono font-bold text-sm text-note-root bg-note-root/15 rounded px-2 py-0.5 shrink-0 w-8 text-center">
                 {{ item.symbol }}
               </span>
@@ -73,6 +81,8 @@ export class CheatSheetComponent {
   readonly intervals = input.required<number[]>();
   readonly characterKey = input<string | undefined>();
 
+  readonly flashedInterval = signal<string | null>(null);
+
   readonly noteList = computed(() =>
     getScaleNotes(this.rootName(), this.intervals()).split(' '),
   );
@@ -80,6 +90,11 @@ export class CheatSheetComponent {
   readonly formulaSymbols = computed(() =>
     getIntervalFormula(this.intervals()).split(' '),
   );
+
+  flashInterval(symbol: string): void {
+    this.flashedInterval.set(symbol);
+    setTimeout(() => this.flashedInterval.set(null), 1500);
+  }
 
   readonly intervalRef = [
     { symbol: '1',  nameKey: 'intRef.1' },
