@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #0a0a0a;
+  --color-bg-fretboard: #1a1a1a;
+  --color-text-primary: #cccccc;
+  --color-fret-line: #333333;
+  --color-note-root: #ff4444;
+  --color-note-tritone: #ff8844;
+  --color-note-scale: #888888;
+  --color-note-non-scale: #222222;
+  --color-note-neutral: #444444;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
