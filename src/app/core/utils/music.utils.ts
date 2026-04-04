@@ -21,19 +21,9 @@ export function getNoteRole(
   if (scaleIntervals === null) {
     return 'neutral';
   }
-
   if (interval === 0) {
     return 'root';
   }
-
-  if (interval === 1) {
-    return scaleIntervals.includes(1) ? 'minorSecond' : 'nonScale';
-  }
-
-  if (interval === 6) {
-    return scaleIntervals.includes(6) ? 'tritone' : 'nonScale';
-  }
-
   return scaleIntervals.includes(interval) ? 'scale' : 'nonScale';
 }
 

@@ -3,40 +3,28 @@
     "title": "Guitar Codes"
   },
   "tabs": {
-    "modes": "Modes",
     "gammas": "Scales",
-    "pentatonics": "Pentatonics",
     "tunings": "Tunings",
     "eq": "EQ"
   },
   "scales": {
-    "mode": "Mode",
+    "mode": "Scale",
     "root": "Root",
+    "ionian": "Ionian (Major)",
     "dorian": "Dorian",
     "phrygian": "Phrygian",
-    "locrian": "Locrian",
-    "ionian": "Ionian",
-    "aeolian": "Aeolian",
-    "mixolydian": "Mixolydian",
     "lydian": "Lydian",
+    "mixolydian": "Mixolydian",
+    "aeolian": "Aeolian (Natural Minor)",
+    "locrian": "Locrian",
+    "harmonicMinor": "Harmonic Minor",
+    "melodicMinor": "Melodic Minor",
+    "minorPenta": "Minor Pentatonic",
+    "majorPenta": "Major Pentatonic",
     "box": "Box",
     "allFrets": "All",
     "boxN": "Box {{n}}",
-    "tritonesOn": "Tritones on",
-    "tritonesOff": "Tritones off",
     "reset": "Reset"
-  },
-  "gammas": {
-    "scale": "Scale",
-    "major": "Major",
-    "naturalMinor": "Natural Minor",
-    "harmonicMinor": "Harmonic Minor",
-    "melodicMinor": "Melodic Minor"
-  },
-  "pentatonics": {
-    "scale": "Pentatonic",
-    "minor": "Minor Pentatonic",
-    "major": "Major Pentatonic"
   },
   "tunings": {
     "tuning": "Tuning",
@@ -99,8 +87,6 @@
     "aeolian": "Natural minor. Sad, melancholic.",
     "mixolydian": "Major with flat 7th. Bluesy, rock.",
     "lydian": "Major with sharp 4th. Dreamy, floating.",
-    "major": "Standard major scale. Bright, resolved.",
-    "naturalMinor": "Natural minor. Sad, dark.",
     "harmonicMinor": "Minor with major 7th. Neoclassical, Eastern.",
     "melodicMinor": "Minor with major 6th and 7th. Jazz, fusion.",
     "minorPenta": "Blues/rock foundation. 5 notes, no weak tones.",

@@ -40,7 +40,7 @@ export class ScalesComponent {
   );
   readonly selectedBox = signal(this.storage.get<number>('selectedBox', 0));
   readonly selectedTuningId = signal(this.storage.get('scaleTuning', 'e-standard'));
-  readonly showTritones = signal(true);
+
 
   readonly currentScale = computed(() =>
     SCALES.find((s) => s.name === this.selectedMode())!,

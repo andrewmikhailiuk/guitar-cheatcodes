@@ -12,11 +12,9 @@ export class FretboardComponent {
   readonly stringLabels = input.required<string[]>();
   readonly totalFrets = input(24);
   readonly showDegrees = input(false);
-  readonly highlightTritones = input(true);
 
   readonly noteClicked = output<FretNote>();
 
-  /** Display strings top-to-bottom: high E at top, low E at bottom */
   readonly displayFretboard = computed(() =>
     [...this.fretboard()].reverse(),
   );
@@ -45,11 +43,6 @@ export class FretboardComponent {
     switch (role) {
       case 'root':
         return 'var(--color-note-root)';
-      case 'tritone':
-      case 'minorSecond':
-        return this.highlightTritones()
-          ? 'var(--color-note-tritone)'
-          : 'var(--color-note-scale)';
       case 'scale':
         return 'var(--color-note-scale)';
       case 'neutral':
@@ -66,9 +59,6 @@ export class FretboardComponent {
     switch (role) {
       case 'root':
         return '#fff';
-      case 'tritone':
-      case 'minorSecond':
-        return this.highlightTritones() ? '#fff' : '#ddd';
       case 'scale':
       case 'neutral':
         return '#ddd';

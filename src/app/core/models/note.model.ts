@@ -4,8 +4,6 @@ export type NoteName =
 
 export type NoteRole =
   | 'root'
-  | 'tritone'
-  | 'minorSecond'
   | 'scale'
   | 'nonScale'
   | 'neutral'

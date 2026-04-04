@@ -39,7 +39,7 @@ export class GammasComponent {
   );
   readonly selectedBox = signal(this.storage.get<number>('gammaBox', 0));
   readonly selectedTuningId = signal(this.storage.get('gammaTuning', 'e-standard'));
-  readonly showTritones = signal(true);
+
 
   readonly currentGamma = computed(() =>
     GAMMAS.find((g) => g.name === this.selectedGamma())!,
