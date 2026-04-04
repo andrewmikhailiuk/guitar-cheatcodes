@@ -1,0 +1,35 @@
+<div class="p-4">
+  <div class="flex flex-wrap gap-4 mb-4 items-center">
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">Mode</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        [value]="selectedMode()"
+        (change)="onModeChange($event)"
+      >
+        @for (scale of scales; track scale.name) {
+          <option [value]="scale.name">{{ scale.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">Root</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        [value]="selectedRoot()"
+        (change)="onRootChange($event)"
+      >
+        @for (root of roots; track root) {
+          <option [value]="root">{{ root }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <app-fretboard
+    [fretboard]="fretboard()"
+    [stringLabels]="stringLabels"
+    (noteClicked)="onNoteClick($event)"
+  />
+</div>
