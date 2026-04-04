@@ -26,7 +26,7 @@
           [style.color]="noteTextColor(note.role)"
           (click)="onNoteClick(note)"
         >
-          {{ note.name }}
+          {{ showDegrees() && note.degree ? note.degree : note.name }}
         </button>
       }
     }

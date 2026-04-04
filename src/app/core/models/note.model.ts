@@ -17,4 +17,5 @@ export interface FretNote {
   frequency: number;
   interval: number;
   role: NoteRole;
+  degree: number | null;
 }

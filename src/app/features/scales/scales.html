@@ -45,6 +45,7 @@
   <app-fretboard
     [fretboard]="fretboard()"
     [stringLabels]="stringLabels"
+    [showDegrees]="selectedBox() !== 0"
     (noteClicked)="onNoteClick($event)"
   />
 </div>

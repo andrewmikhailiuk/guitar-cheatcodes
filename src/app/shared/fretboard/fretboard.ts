@@ -11,6 +11,7 @@ export class FretboardComponent {
   readonly fretboard = input.required<FretNote[][]>();
   readonly stringLabels = input.required<string[]>();
   readonly totalFrets = input(24);
+  readonly showDegrees = input(false);
 
   readonly noteClicked = output<FretNote>();
 

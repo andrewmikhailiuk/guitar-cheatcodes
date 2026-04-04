@@ -34,12 +34,17 @@ export class NoteService {
         const noteIndex = ((midi % 12) + 12) % 12;
         const interval = ((noteIndex - rootIndex) % 12 + 12) % 12;
 
+        const degreeIdx = scaleIntervals !== null
+          ? scaleIntervals.indexOf(interval)
+          : -1;
+
         stringNotes.push({
           name,
           midi,
           frequency: midiToFrequency(midi),
           interval,
           role: getNoteRole(interval, scaleIntervals),
+          degree: degreeIdx >= 0 ? degreeIdx + 1 : null,
         });
       }
 
