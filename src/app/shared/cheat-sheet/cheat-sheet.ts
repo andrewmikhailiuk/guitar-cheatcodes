@@ -54,11 +54,13 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
       <!-- Interval reference -->
       <div class="p-4 bg-bg-fretboard rounded-lg border border-fret-line">
         <span class="text-xs text-gray-500 uppercase tracking-wider">{{ 'cheat.intervalRef' | transloco }}</span>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-1 mt-2 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3">
           @for (item of intervalRef; track item.symbol) {
-            <div class="flex items-center gap-2">
-              <span class="font-mono font-bold text-text-primary w-5">{{ item.symbol }}</span>
-              <span class="text-gray-500">{{ item.nameKey | transloco }}</span>
+            <div class="flex items-start gap-3 p-2 rounded bg-bg-primary border border-fret-line/40">
+              <span class="font-mono font-bold text-sm text-note-root bg-note-root/15 rounded px-2 py-0.5 shrink-0 w-8 text-center">
+                {{ item.symbol }}
+              </span>
+              <span class="text-xs text-gray-400 leading-relaxed">{{ item.nameKey | transloco }}</span>
             </div>
           }
         </div>
