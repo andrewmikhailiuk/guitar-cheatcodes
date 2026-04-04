@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
 import { AudioService } from '../../core/services/audio.service';
@@ -9,7 +10,7 @@ import { FretNote, NoteName } from '../../core/models/note.model';
 
 @Component({
   selector: 'app-scales',
-  imports: [FretboardComponent],
+  imports: [FretboardComponent, TranslocoModule],
   templateUrl: './scales.html',
 })
 export class ScalesComponent {

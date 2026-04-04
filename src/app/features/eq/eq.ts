@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { UpperCasePipe } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AudioService } from '../../core/services/audio.service';
 import { EqSettings } from '../../core/models/eq.model';
 import { EQ_PRESETS, FREQUENCY_BANDS } from '../../core/data/eq-presets.data';
 
 @Component({
   selector: 'app-eq',
-  imports: [UpperCasePipe],
+  imports: [TranslocoModule],
   templateUrl: './eq.html',
 })
 export class EqComponent {

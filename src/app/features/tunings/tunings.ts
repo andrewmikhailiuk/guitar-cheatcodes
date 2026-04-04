@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
 import { AudioService } from '../../core/services/audio.service';
@@ -7,7 +8,7 @@ import { FretNote } from '../../core/models/note.model';
 
 @Component({
   selector: 'app-tunings',
-  imports: [FretboardComponent],
+  imports: [FretboardComponent, TranslocoModule],
   templateUrl: './tunings.html',
 })
 export class TuningsComponent {

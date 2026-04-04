@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Guitar Codes"
+  },
+  "tabs": {
+    "scales": "Лады",
+    "tunings": "Строи",
+    "eq": "Эквалайзер"
+  },
+  "scales": {
+    "mode": "Лад",
+    "root": "Тоника",
+    "dorian": "Дорийский",
+    "phrygian": "Фригийский",
+    "locrian": "Локрийский",
+    "ionian": "Ионийский",
+    "aeolian": "Эолийский",
+    "mixolydian": "Миксолидийский"
+  },
+  "tunings": {
+    "tuning": "Строй",
+    "eStandard": "E Standard",
+    "dropD": "Drop D",
+    "dStandard": "D Standard",
+    "dropC": "Drop C",
+    "bStandard": "B Standard",
+    "dropA6": "Drop A",
+    "7bStandard": "7-стр. B Standard",
+    "7dropA": "7-стр. Drop A"
+  },
+  "eq": {
+    "frequency": "Частота",
+    "effect": "Эффект",
+    "meat": "Мясо (палм-мьют)",
+    "mud": "Грязь (бубнёж)",
+    "aggression": "Агрессия",
+    "zing": "Звон",
+    "low": "Низы",
+    "lowMid": "Низ. середина",
+    "highMid": "Верх. середина",
+    "high": "Верхи",
+    "gain": "Гейн",
+    "presetDeath": "Death",
+    "presetBlack": "Black",
+    "presetDefault": "Сброс",
+    "playRiff": "Играть рифф",
+    "stop": "Стоп"
+  },
+  "language": {
+    "switch": "EN"
+  }
+}

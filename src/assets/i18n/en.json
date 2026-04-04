@@ -1,0 +1,52 @@
+{
+  "app": {
+    "title": "Guitar Codes"
+  },
+  "tabs": {
+    "scales": "Scales",
+    "tunings": "Tunings",
+    "eq": "EQ"
+  },
+  "scales": {
+    "mode": "Mode",
+    "root": "Root",
+    "dorian": "Dorian",
+    "phrygian": "Phrygian",
+    "locrian": "Locrian",
+    "ionian": "Ionian",
+    "aeolian": "Aeolian",
+    "mixolydian": "Mixolydian"
+  },
+  "tunings": {
+    "tuning": "Tuning",
+    "eStandard": "E Standard",
+    "dropD": "Drop D",
+    "dStandard": "D Standard",
+    "dropC": "Drop C",
+    "bStandard": "B Standard",
+    "dropA6": "Drop A",
+    "7bStandard": "7-str B Standard",
+    "7dropA": "7-str Drop A"
+  },
+  "eq": {
+    "frequency": "Frequency",
+    "effect": "Effect",
+    "meat": "Meat (palm mute)",
+    "mud": "Mud (boomy)",
+    "aggression": "Aggression",
+    "zing": "Zing",
+    "low": "Low",
+    "lowMid": "Low-Mid",
+    "highMid": "High-Mid",
+    "high": "High",
+    "gain": "Gain",
+    "presetDeath": "Death",
+    "presetBlack": "Black",
+    "presetDefault": "Default",
+    "playRiff": "Play Riff",
+    "stop": "Stop"
+  },
+  "language": {
+    "switch": "RU"
+  }
+}

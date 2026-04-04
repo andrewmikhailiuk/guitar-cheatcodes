@@ -1,6 +1,6 @@
 <div class="p-4">
   <div class="mb-4">
-    <label class="block text-xs text-gray-400 mb-1">Tuning</label>
+    <label class="block text-xs text-gray-400 mb-1">{{ 'tunings.tuning' | transloco }}</label>
     <select
       class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
       [value]="selectedTuningId()"
@@ -8,10 +8,7 @@
     >
       @for (tuning of tunings; track tuning.id) {
         <option [value]="tuning.id">
-          {{ tuning.openStrings.join(' ') }}
-          @if (tuning.stringCount === 7) {
-            (7-str)
-          }
+          {{ tuning.labelKey | transloco }} ({{ tuning.openStrings.join(' ') }})
         </option>
       }
     </select>
