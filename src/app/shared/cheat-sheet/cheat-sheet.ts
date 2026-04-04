@@ -14,17 +14,49 @@ const INTERVAL_LABELS: Record<string, string> = {
   selector: 'app-cheat-sheet',
   imports: [TranslocoModule],
   template: `
-    <div class="mt-3 px-1 text-xs text-gray-400 flex flex-wrap gap-x-4 gap-y-1">
-      <span>
-        <span class="text-gray-500">{{ 'cheat.notes' | transloco }}:</span>
-        <span class="font-mono text-text-primary ml-1">{{ notes() }}</span>
-      </span>
-      <span>
-        <span class="text-gray-500">{{ 'cheat.formula' | transloco }}:</span>
-        <span class="font-mono text-text-primary ml-1">{{ formulaWithNames() }}</span>
-      </span>
+    <div class="mt-4 p-4 bg-bg-fretboard rounded-lg border border-fret-line space-y-3">
+      <!-- Notes -->
+      <div class="flex items-start gap-3">
+        <span class="text-xs text-gray-500 uppercase tracking-wider w-20 shrink-0 pt-1">
+          {{ 'cheat.notes' | transloco }}
+        </span>
+        <div class="flex flex-wrap gap-1.5">
+          @for (note of noteList(); track note; let i = $index) {
+            <span
+              class="px-2 py-0.5 rounded font-mono text-sm"
+              [class]="i === 0
+                ? 'bg-note-root/20 text-note-root border border-note-root/30'
+                : 'bg-fret-line/30 text-text-primary border border-fret-line/50'"
+            >
+              {{ note }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Formula -->
+      <div class="flex items-start gap-3">
+        <span class="text-xs text-gray-500 uppercase tracking-wider w-20 shrink-0 pt-1">
+          {{ 'cheat.formula' | transloco }}
+        </span>
+        <div class="flex flex-wrap gap-1.5">
+          @for (int of intervalInfos(); track int.symbol) {
+            <span class="inline-flex items-baseline gap-1 px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50">
+              <span class="font-mono text-sm text-text-primary font-bold">{{ int.symbol }}</span>
+              <span class="text-xs text-gray-500">{{ int.name }}</span>
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Character -->
       @if (characterKey()) {
-        <span class="italic">{{ characterKey()! | transloco }}</span>
+        <div class="flex items-start gap-3">
+          <span class="text-xs text-gray-500 uppercase tracking-wider w-20 shrink-0 pt-0.5">
+            {{ 'cheat.character' | transloco }}
+          </span>
+          <span class="text-sm text-gray-400 italic">{{ characterKey()! | transloco }}</span>
+        </div>
       }
     </div>
   `,
@@ -34,12 +66,15 @@ export class CheatSheetComponent {
   readonly intervals = input.required<number[]>();
   readonly characterKey = input<string | undefined>();
 
-  readonly notes = computed(() =>
-    getScaleNotes(this.rootName(), this.intervals()),
+  readonly noteList = computed(() =>
+    getScaleNotes(this.rootName(), this.intervals()).split(' '),
   );
 
-  readonly formulaWithNames = computed(() => {
+  readonly intervalInfos = computed(() => {
     const parts = getIntervalFormula(this.intervals()).split(' ');
-    return parts.map((p) => `${p}(${INTERVAL_LABELS[p] ?? p})`).join('  ');
+    return parts.map((p) => ({
+      symbol: p,
+      name: INTERVAL_LABELS[p] ?? p,
+    }));
   });
 }
