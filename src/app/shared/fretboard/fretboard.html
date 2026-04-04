@@ -14,8 +14,8 @@
 
   <!-- Fretboard grid -->
   <div class="fretboard-grid" [style.grid-template-columns]="gridColumns()" role="grid" aria-label="Fretboard">
-    @for (string of fretboard(); track $index; let si = $index) {
-      <span class="string-label" role="rowheader">{{ stringLabels()[si] }}</span>
+    @for (string of displayFretboard(); track $index; let si = $index) {
+      <span class="string-label" role="rowheader">{{ displayStringLabels()[si] }}</span>
 
       @for (note of string; track $index; let fi = $index) {
         <button

@@ -15,6 +15,15 @@ export class FretboardComponent {
 
   readonly noteClicked = output<FretNote>();
 
+  /** Display strings top-to-bottom: high E at top, low E at bottom */
+  readonly displayFretboard = computed(() =>
+    [...this.fretboard()].reverse(),
+  );
+
+  readonly displayStringLabels = computed(() =>
+    [...this.stringLabels()].reverse(),
+  );
+
   readonly fretRange = computed(() =>
     Array.from({ length: this.totalFrets() + 1 }, (_, i) => i),
   );
