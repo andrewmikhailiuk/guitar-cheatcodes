@@ -56,7 +56,7 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
         <span class="text-xs text-gray-500 uppercase tracking-wider">{{ 'cheat.intervalRef' | transloco }}</span>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3">
           @for (item of intervalRef; track item.symbol) {
-            <div class="flex items-start gap-3 p-2 rounded bg-bg-primary border border-fret-line/40">
+            <div class="flex items-start gap-3 p-2 rounded bg-fret-line/20 border border-fret-line/50">
               <span class="font-mono font-bold text-sm text-note-root bg-note-root/15 rounded px-2 py-0.5 shrink-0 w-8 text-center">
                 {{ item.symbol }}
               </span>
