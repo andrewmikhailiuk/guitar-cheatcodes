@@ -8,7 +8,8 @@ export type NoteRole =
   | 'minorSecond'
   | 'scale'
   | 'nonScale'
-  | 'neutral';
+  | 'neutral'
+  | 'outOfBox';
 
 export interface FretNote {
   name: NoteName;

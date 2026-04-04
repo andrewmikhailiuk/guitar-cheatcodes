@@ -25,6 +25,21 @@
         }
       </select>
     </div>
+
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">{{ 'scales.box' | transloco }}</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        [value]="selectedBox()"
+        (change)="onBoxChange($event)"
+      >
+        @for (opt of boxOptions; track opt) {
+          <option [value]="opt">
+            {{ opt === 0 ? ('scales.allFrets' | transloco) : ('scales.boxN' | transloco: { n: opt }) }}
+          </option>
+        }
+      </select>
+    </div>
   </div>
 
   <app-fretboard

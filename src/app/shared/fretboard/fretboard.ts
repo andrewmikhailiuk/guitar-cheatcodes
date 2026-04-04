@@ -41,6 +41,8 @@ export class FretboardComponent {
         return 'var(--color-note-scale)';
       case 'neutral':
         return 'var(--color-note-neutral)';
+      case 'outOfBox':
+        return '#1a1a1a';
       case 'nonScale':
       default:
         return 'var(--color-note-non-scale)';
@@ -56,6 +58,8 @@ export class FretboardComponent {
       case 'scale':
       case 'neutral':
         return '#ddd';
+      case 'outOfBox':
+        return '#444';
       case 'nonScale':
       default:
         return '#555';

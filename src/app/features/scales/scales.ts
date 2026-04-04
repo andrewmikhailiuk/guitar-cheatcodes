@@ -5,9 +5,10 @@ import { NoteService } from '../../core/services/note.service';
 import { AudioService } from '../../core/services/audio.service';
 import { StorageService } from '../../core/services/storage.service';
 import { SCALES } from '../../core/data/scales.data';
-import { CHROMATIC_NOTES } from '../../core/data/notes.data';
+import { CHROMATIC_NOTES, E_STANDARD_MIDI, TOTAL_FRETS } from '../../core/data/notes.data';
 import { ModeName } from '../../core/models/scale.model';
 import { FretNote, NoteName } from '../../core/models/note.model';
+import { noteNameToIndex } from '../../core/utils/music.utils';
 
 @Component({
   selector: 'app-scales',
@@ -21,20 +22,23 @@ export class ScalesComponent implements OnInit {
 
   readonly scales = SCALES;
   readonly roots = CHROMATIC_NOTES;
+  readonly boxOptions = [0, 1, 2, 3, 4, 5, 6, 7];
 
   readonly selectedMode = signal<ModeName>('phrygian');
   readonly selectedRoot = signal<NoteName>('E');
+  readonly selectedBox = signal(0);
 
   ngOnInit(): void {
     this.selectedMode.set(this.storage.get<ModeName>('selectedMode', 'phrygian'));
     this.selectedRoot.set(this.storage.get<NoteName>('selectedRoot', 'E'));
+    this.selectedBox.set(this.storage.get<number>('selectedBox', 0));
   }
 
   readonly currentScale = computed(() =>
     SCALES.find((s) => s.name === this.selectedMode())!,
   );
 
-  readonly fretboard = computed(() =>
+  private readonly baseFretboard = computed(() =>
     this.noteService.buildFretboard(
       6,
       [0, 0, 0, 0, 0, 0],
@@ -42,6 +46,21 @@ export class ScalesComponent implements OnInit {
       this.currentScale().intervals,
     ),
   );
+
+  readonly fretboard = computed(() => {
+    const box = this.selectedBox();
+    const fb = this.baseFretboard();
+    if (box === 0) return fb;
+
+    const boxNotes = this.noteService.compute3NPSBox(
+      this.currentScale().intervals,
+      noteNameToIndex(this.selectedRoot()),
+      box - 1,
+      E_STANDARD_MIDI,
+      TOTAL_FRETS,
+    );
+    return this.noteService.applyBoxFilter(fb, boxNotes);
+  });
 
   readonly stringLabels = ['E', 'A', 'D', 'G', 'B', 'E'];
 
@@ -55,6 +74,12 @@ export class ScalesComponent implements OnInit {
     const root = (event.target as HTMLSelectElement).value as NoteName;
     this.selectedRoot.set(root);
     this.storage.set('selectedRoot', root);
+  }
+
+  onBoxChange(event: Event): void {
+    const box = parseInt((event.target as HTMLSelectElement).value, 10);
+    this.selectedBox.set(box);
+    this.storage.set('selectedBox', box);
   }
 
   onNoteClick(note: FretNote): void {

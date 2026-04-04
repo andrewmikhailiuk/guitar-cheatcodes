@@ -15,7 +15,10 @@
     "locrian": "Локрийский",
     "ionian": "Ионийский",
     "aeolian": "Эолийский",
-    "mixolydian": "Миксолидийский"
+    "mixolydian": "Миксолидийский",
+    "box": "Бокс",
+    "allFrets": "Все",
+    "boxN": "Бокс {{n}}"
   },
   "tunings": {
     "tuning": "Строй",

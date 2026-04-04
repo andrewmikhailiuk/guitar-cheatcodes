@@ -15,7 +15,10 @@
     "locrian": "Locrian",
     "ionian": "Ionian",
     "aeolian": "Aeolian",
-    "mixolydian": "Mixolydian"
+    "mixolydian": "Mixolydian",
+    "box": "Box",
+    "allFrets": "All",
+    "boxN": "Box {{n}}"
   },
   "tunings": {
     "tuning": "Tuning",
