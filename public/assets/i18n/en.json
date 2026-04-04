@@ -3,7 +3,9 @@
     "title": "Guitar Codes"
   },
   "tabs": {
-    "scales": "Scales",
+    "modes": "Modes",
+    "gammas": "Scales",
+    "pentatonics": "Pentatonics",
     "tunings": "Tunings",
     "eq": "EQ"
   },
@@ -21,6 +23,18 @@
     "allFrets": "All",
     "boxN": "Box {{n}}",
     "reset": "Reset"
+  },
+  "gammas": {
+    "scale": "Scale",
+    "major": "Major",
+    "naturalMinor": "Natural Minor",
+    "harmonicMinor": "Harmonic Minor",
+    "melodicMinor": "Melodic Minor"
+  },
+  "pentatonics": {
+    "scale": "Pentatonic",
+    "minor": "Minor Pentatonic",
+    "major": "Major Pentatonic"
   },
   "tunings": {
     "tuning": "Tuning",

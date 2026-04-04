@@ -1,0 +1,71 @@
+<div class="p-4">
+  <div class="flex flex-wrap gap-4 mb-4 items-center">
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">{{ 'pentatonics.scale' | transloco }}</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        (change)="onPentaChange($event)"
+      >
+        @for (penta of pentatonics; track penta.name) {
+          <option [value]="penta.name" [selected]="penta.name === selectedPenta()">
+            {{ penta.labelKey | transloco }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">{{ 'scales.root' | transloco }}</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        (change)="onRootChange($event)"
+      >
+        @for (root of roots; track root) {
+          <option [value]="root" [selected]="root === selectedRoot()">{{ root }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">{{ 'tunings.tuning' | transloco }}</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        (change)="onTuningChange($event)"
+      >
+        @for (tuning of tunings; track tuning.id) {
+          <option [value]="tuning.id" [selected]="tuning.id === selectedTuningId()">
+            {{ tuning.labelKey | transloco }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-xs text-gray-400 mb-1">{{ 'scales.box' | transloco }}</label>
+      <select
+        class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+        (change)="onBoxChange($event)"
+      >
+        @for (opt of boxOptions; track opt) {
+          <option [value]="opt" [selected]="opt === selectedBox()">
+            {{ opt === 0 ? ('scales.allFrets' | transloco) : ('scales.boxN' | transloco: { n: opt }) }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <button
+      class="self-end px-3 py-2 text-sm border border-fret-line rounded hover:bg-fret-line transition-colors"
+      (click)="resetFilters()"
+    >
+      {{ 'scales.reset' | transloco }}
+    </button>
+  </div>
+
+  <app-fretboard
+    [fretboard]="fretboard()"
+    [stringLabels]="stringLabels()"
+    [showDegrees]="selectedBox() !== 0"
+    (noteClicked)="onNoteClick($event)"
+  />
+</div>

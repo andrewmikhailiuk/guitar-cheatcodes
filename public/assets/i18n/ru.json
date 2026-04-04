@@ -3,7 +3,9 @@
     "title": "Guitar Codes"
   },
   "tabs": {
-    "scales": "Лады",
+    "modes": "Лады",
+    "gammas": "Гаммы",
+    "pentatonics": "Пентатоники",
     "tunings": "Строи",
     "eq": "Эквалайзер"
   },
@@ -21,6 +23,18 @@
     "allFrets": "Все",
     "boxN": "Бокс {{n}}",
     "reset": "Сброс"
+  },
+  "gammas": {
+    "scale": "Гамма",
+    "major": "Мажорная",
+    "naturalMinor": "Натуральный минор",
+    "harmonicMinor": "Гармонический минор",
+    "melodicMinor": "Мелодический минор"
+  },
+  "pentatonics": {
+    "scale": "Пентатоника",
+    "minor": "Минорная",
+    "major": "Мажорная"
   },
   "tunings": {
     "tuning": "Строй",

@@ -6,12 +6,12 @@ import { TranslocoModule } from '@jsverse/transloco';
   selector: 'app-tab-nav',
   imports: [RouterLink, RouterLinkActive, TranslocoModule],
   template: `
-    <nav class="flex gap-1 border-b border-fret-line px-4">
+    <nav class="flex gap-1 border-b border-fret-line px-4 overflow-x-auto">
       @for (tab of tabs; track tab.path) {
         <a
           [routerLink]="tab.path"
           routerLinkActive="text-note-root border-b-2 border-note-root"
-          class="px-4 py-3 text-sm transition-colors hover:text-white"
+          class="px-4 py-3 text-sm transition-colors hover:text-white whitespace-nowrap"
         >
           {{ tab.labelKey | transloco }}
         </a>
@@ -21,7 +21,9 @@ import { TranslocoModule } from '@jsverse/transloco';
 })
 export class TabNavComponent {
   readonly tabs = [
-    { path: '/scales', labelKey: 'tabs.scales' },
+    { path: '/modes', labelKey: 'tabs.modes' },
+    { path: '/gammas', labelKey: 'tabs.gammas' },
+    { path: '/pentatonics', labelKey: 'tabs.pentatonics' },
     { path: '/tunings', labelKey: 'tabs.tunings' },
     { path: '/eq', labelKey: 'tabs.eq' },
   ];
