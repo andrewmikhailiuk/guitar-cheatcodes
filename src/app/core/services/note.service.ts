@@ -57,9 +57,8 @@ export class NoteService {
   /**
    * Compute a positional box using sequential degree assignment.
    * Box N starts on degree N (1=root) on the lowest string.
-   * Each string continues the scale sequence, taking 2-3 notes within
-   * a 4-fret reach. Stops after 2 full octaves + root (15 notes for
-   * a 7-note scale), so boxes don't overlap.
+   * Each string continues the scale sequence, taking 2-3 notes
+   * within a 3-fret span from the first note on that string.
    */
   computeBox(
     scaleIntervals: number[],
@@ -70,8 +69,6 @@ export class NoteService {
   ): Set<string> {
     const box = new Set<string>();
     const numDegrees = scaleIntervals.length;
-    const maxNotes = numDegrees * 2 + 1;
-    let totalNotes = 0;
 
     let currentDegreeIdx = boxNumber - 1;
 
@@ -88,7 +85,7 @@ export class NoteService {
     }
     if (refFret < 0) return box;
 
-    for (let s = 0; s < openStringMidis.length && totalNotes < maxNotes; s++) {
+    for (let s = 0; s < openStringMidis.length; s++) {
       const openMidi = openStringMidis[s];
 
       // Find fret of currentDegree on this string, closest to refFret
@@ -109,11 +106,10 @@ export class NoteService {
 
       // Take consecutive scale notes within 3-fret span from startFret
       box.add(`${s}-${startFret}`);
-      totalNotes++;
       let lastDegIdx = currentDegreeIdx;
 
       let nextDegIdx = (currentDegreeIdx + 1) % numDegrees;
-      while (totalNotes < maxNotes) {
+      while (true) {
         const nextInterval = scaleIntervals[nextDegIdx];
         let nextFret = -1;
         for (let f = startFret + 1; f <= totalFrets; f++) {
@@ -126,7 +122,6 @@ export class NoteService {
         if (nextFret < 0 || nextFret - startFret > 3) break;
 
         box.add(`${s}-${nextFret}`);
-        totalNotes++;
         lastDegIdx = nextDegIdx;
         nextDegIdx = (nextDegIdx + 1) % numDegrees;
       }
