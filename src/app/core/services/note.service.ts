@@ -55,14 +55,13 @@ export class NoteService {
   }
 
   /**
-   * Compute a positional box pattern.
+   * CAGED box pattern — 5 positions covering one octave on the neck.
    *
    * Algorithm:
-   * - Box N starts from scale degree N on the lowest string
-   * - Each string takes 2-3 ascending scale notes within 4 fret positions
-   *   (index-middle-ring-pinky, max span = 3 frets)
-   * - The next string continues from the next degree in sequence
-   * - This keeps the hand in one position on the neck
+   * 1. Find 7 scale notes on low E (one octave starting from root)
+   * 2. Remove upper note of each half-step pair → 5 anchors
+   * 3. Box 1 = root anchor, Box 2-5 = ascending from there
+   * 4. Each box = all scale notes within [anchor-1, anchor+3] on ALL strings
    */
   computeBox(
     scaleIntervals: number[],
@@ -72,58 +71,56 @@ export class NoteService {
     totalFrets: number,
   ): Set<string> {
     const box = new Set<string>();
+    if (boxNumber < 1 || boxNumber > 5) return box;
 
-    // Build scale notes per string: { fret, degreeIndex }
-    const strings = openStringMidis.map((openMidi) => {
-      const notes: { fret: number; deg: number }[] = [];
-      for (let f = 0; f <= totalFrets; f++) {
+    // Step 1: find root fret on lowest string
+    let rootFret = -1;
+    for (let f = 0; f <= totalFrets; f++) {
+      const interval =
+        (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
+      if (interval === 0) {
+        rootFret = f;
+        break;
+      }
+    }
+    if (rootFret < 0) return box;
+
+    // Step 2: collect 7 scale notes ascending from root on low E
+    const scaleFromRoot: number[] = [];
+    for (let f = rootFret; scaleFromRoot.length < 7; f++) {
+      if (f > totalFrets) break;
+      const interval =
+        (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
+      if (scaleIntervals.includes(interval)) {
+        scaleFromRoot.push(f);
+      }
+    }
+
+    // Step 3: remove upper note of each half-step pair → 5 anchors
+    const anchors: number[] = [];
+    for (let i = 0; i < scaleFromRoot.length; i++) {
+      const prevGap =
+        i > 0 ? scaleFromRoot[i] - scaleFromRoot[i - 1] : 99;
+      if (prevGap > 1) {
+        anchors.push(scaleFromRoot[i]);
+      }
+    }
+
+    if (boxNumber > anchors.length) return box;
+    const anchorFret = anchors[boxNumber - 1];
+
+    // Step 4: collect all scale notes within [anchor-1, anchor+3]
+    const lo = Math.max(0, anchorFret - 1);
+    const hi = anchorFret + 3;
+
+    for (let s = 0; s < openStringMidis.length; s++) {
+      const openMidi = openStringMidis[s];
+      for (let f = lo; f <= hi && f <= totalFrets; f++) {
         const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
-        const deg = scaleIntervals.indexOf(interval);
-        if (deg >= 0) {
-          notes.push({ fret: f, deg });
+        if (scaleIntervals.includes(interval)) {
+          box.add(`${s}-${f}`);
         }
       }
-      return notes;
-    });
-
-    // Find anchor: first occurrence of starting degree on lowest string
-    const startDeg = boxNumber - 1;
-    let nextDeg = startDeg;
-    const anchor = strings[0].find((n) => n.deg === nextDeg);
-    if (!anchor) return box;
-
-    let handPos = anchor.fret;
-    let done = false;
-
-    for (let s = 0; s < strings.length && !done; s++) {
-      const notes = strings[s];
-
-      // Find starting note: degree nextDeg, closest to handPos
-      let startFret = -1;
-      let bestDist = Infinity;
-      for (const n of notes) {
-        if (n.deg === nextDeg && Math.abs(n.fret - handPos) < bestDist) {
-          bestDist = Math.abs(n.fret - handPos);
-          startFret = n.fret;
-        }
-      }
-      if (startFret < 0) continue;
-
-      // Take ascending scale notes within 3-fret span from startFret
-      for (const n of notes) {
-        if (n.fret < startFret) continue;
-        if (n.fret - startFret > 3) break;
-        box.add(`${s}-${n.fret}`);
-        nextDeg = (n.deg + 1) % scaleIntervals.length;
-
-        // Stop when we return to the starting degree (box complete)
-        if (n.deg === startDeg && s > 0) {
-          done = true;
-          break;
-        }
-      }
-
-      handPos = startFret;
     }
 
     return box;

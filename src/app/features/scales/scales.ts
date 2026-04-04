@@ -22,7 +22,7 @@ export class ScalesComponent implements OnInit {
 
   readonly scales = SCALES;
   readonly roots = CHROMATIC_NOTES;
-  readonly boxOptions = [0, 1, 2, 3, 4, 5, 6, 7];
+  readonly boxOptions = [0, 1, 2, 3, 4, 5];
 
   readonly selectedMode = signal<ModeName>('phrygian');
   readonly selectedRoot = signal<NoteName>('E');
