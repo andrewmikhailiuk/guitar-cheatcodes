@@ -19,21 +19,19 @@
     (noteClicked)="onNoteClick($event)"
   />
 
-  <div class="mt-4 p-4 bg-bg-fretboard rounded-lg border border-fret-line">
+  <div class="mt-4 p-4 bg-bg-fretboard rounded-lg border border-fret-line space-y-3">
     <span class="text-xs text-gray-500 uppercase tracking-wider">{{ 'cheat.noteNames' | transloco }}</span>
-    <div class="flex flex-wrap gap-1.5 mt-2">
+    <div class="flex flex-wrap gap-1.5">
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">C <span class="text-xs text-gray-500">До</span></span>
-      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">C# <span class="text-xs text-gray-500">До#</span></span>
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">D <span class="text-xs text-gray-500">Ре</span></span>
-      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">D# <span class="text-xs text-gray-500">Ре#</span></span>
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">E <span class="text-xs text-gray-500">Ми</span></span>
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">F <span class="text-xs text-gray-500">Фа</span></span>
-      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">F# <span class="text-xs text-gray-500">Фа#</span></span>
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">G <span class="text-xs text-gray-500">Соль</span></span>
-      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">G# <span class="text-xs text-gray-500">Соль#</span></span>
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">A <span class="text-xs text-gray-500">Ля</span></span>
-      <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">A# <span class="text-xs text-gray-500">Ля#</span></span>
       <span class="px-2 py-0.5 rounded bg-fret-line/30 border border-fret-line/50 font-mono text-sm">B <span class="text-xs text-gray-500">Си</span></span>
     </div>
+    <p class="text-xs text-gray-600 leading-relaxed">
+      {{ 'cheat.whyC' | transloco }}
+    </p>
   </div>
 </div>

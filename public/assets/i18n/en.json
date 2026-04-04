@@ -71,6 +71,7 @@
     "formula": "Formula",
     "intervals": "Intervals",
     "noteNames": "Notes",
+    "whyC": "Why C and not A? In medieval times the alphabet started from A — the lowest note of the system. Later, when major scale became dominant, C major (no sharps/flats) became the reference point. The letters stayed but the starting point shifted to C.",
     "character": "Character"
   },
   "character": {
