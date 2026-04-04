@@ -10,7 +10,7 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
     <div class="mt-3 space-y-2 px-4">
       <!-- Compact info line -->
       <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-        <span class="text-gray-500">{{ 'cheat.notes' | transloco }}:</span>
+        <span class="text-gray-400">{{ 'cheat.notes' | transloco }}:</span>
         <span class="font-mono text-sm">
           @for (note of noteList(); track note; let i = $index) {
             <span [class]="i === 0 ? 'text-note-root font-bold' : 'text-text-primary'">{{ note }}</span>
@@ -22,7 +22,7 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
 
         <span class="text-fret-line">|</span>
 
-        <span class="text-gray-500">{{ 'cheat.formula' | transloco }}:</span>
+        <span class="text-gray-400">{{ 'cheat.formula' | transloco }}:</span>
         <span class="font-mono text-sm">
           @for (sym of formulaSymbols(); track sym) {
             <span
@@ -37,14 +37,14 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
 
         @if (characterKey()) {
           <span class="text-fret-line">|</span>
-          <span class="text-gray-500 italic">{{ characterKey()! | transloco }}</span>
+          <span class="text-gray-300 italic">{{ characterKey()! | transloco }}</span>
         }
       </div>
 
       <!-- Collapsible interval reference -->
       <div>
         <button
-          class="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+          class="text-xs text-gray-400 hover:text-gray-300 transition-colors"
           (click)="showRef.set(!showRef())"
         >
           {{ 'cheat.intervalRef' | transloco }}
@@ -58,7 +58,7 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
                 class="flex items-center gap-2 px-2 py-1 rounded text-xs transition-all duration-200"
                 [class]="flashedInterval() === item.symbol
                   ? 'bg-note-root/20 text-note-root'
-                  : 'bg-fret-line/10 text-gray-500'"
+                  : 'bg-fret-line/10 text-gray-400'"
               >
                 <span class="font-mono font-bold text-text-primary w-5">{{ item.symbol }}</span>
                 <span>{{ item.nameKey | transloco }}</span>
@@ -75,7 +75,7 @@ export class CheatSheetComponent {
   readonly intervals = input.required<number[]>();
   readonly characterKey = input<string | undefined>();
 
-  readonly showRef = signal(false);
+  readonly showRef = signal(true);
   readonly flashedInterval = signal<string | null>(null);
 
   readonly noteList = computed(() =>

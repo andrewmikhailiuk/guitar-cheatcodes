@@ -80,17 +80,17 @@
     "7": "Major 7th — 11 semitones, dreamy, almost home"
   },
   "character": {
-    "dorian": "Minor with bright 6th. Jazz, funk, blues-rock.",
-    "phrygian": "Dark, Spanish/Eastern. Death metal, flamenco.",
-    "locrian": "Darkest, unstable. Diminished 5th. Extreme metal.",
-    "ionian": "Standard major. Bright, happy.",
-    "aeolian": "Natural minor. Sad, melancholic.",
-    "mixolydian": "Major with flat 7th. Bluesy, rock.",
-    "lydian": "Major with sharp 4th. Dreamy, floating.",
-    "harmonicMinor": "Minor with major 7th. Neoclassical, Eastern.",
-    "melodicMinor": "Minor with major 6th and 7th. Jazz, fusion.",
-    "minorPenta": "Blues/rock foundation. 5 notes, no weak tones.",
-    "majorPenta": "Bright, open. Country, pop, rock."
+    "dorian": "Minor with a bright 6th degree. Jazz, funk, blues-rock.",
+    "phrygian": "Dark with Spanish/Eastern flavor. Death metal, flamenco.",
+    "locrian": "Darkest mode. No pure 5th — tritone instead. Unstable, anxious sound.",
+    "ionian": "Standard major scale. Bright, happy sound.",
+    "aeolian": "Standard minor scale. Sad, melancholic sound.",
+    "mixolydian": "Major with flat 7th. Bluesy, rock character.",
+    "lydian": "Major with raised 4th. Dreamy, floating sound.",
+    "harmonicMinor": "Minor with raised 7th. Neoclassical, Eastern motifs.",
+    "melodicMinor": "Minor with raised 6th and 7th. Jazz, fusion.",
+    "minorPenta": "Blues and rock foundation. 5 notes, everything sounds good together.",
+    "majorPenta": "Bright, open sound. Country, pop, rock."
   },
   "language": {
     "switch": "RU"
