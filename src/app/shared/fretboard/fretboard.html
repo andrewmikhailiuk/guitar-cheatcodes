@@ -26,7 +26,13 @@
           [style.color]="noteTextColor(note.role)"
           (click)="onNoteClick(note)"
         >
-          {{ showDegrees() && note.degree ? note.degree : note.name }}
+          @if (showDegrees()) {
+            @if (note.degree && note.role !== 'outOfBox') {
+              {{ note.degree }}
+            }
+          } @else {
+            {{ note.name }}
+          }
         </button>
       }
     }

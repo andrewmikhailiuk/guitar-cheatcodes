@@ -121,14 +121,35 @@ export class NoteService {
   }
 
   /**
-   * Dim scale notes that fall outside the selected box.
+   * Dim notes outside the box and assign sequential playing order (1-7 cycling).
+   * Order goes from lowest string (index 0) ascending frets, to highest string.
    */
   applyBoxFilter(fretboard: FretNote[][], boxNotes: Set<string>): FretNote[][] {
+    // Collect box notes in playing order: lowest string first, ascending fret
+    const ordered: { si: number; fi: number }[] = [];
+    for (let si = 0; si < fretboard.length; si++) {
+      for (let fi = 0; fi < fretboard[si].length; fi++) {
+        if (boxNotes.has(`${si}-${fi}`)) {
+          ordered.push({ si, fi });
+        }
+      }
+    }
+
+    // Build a map of (si,fi) → playing order number (1-7 cycling)
+    const orderMap = new Map<string, number>();
+    for (let i = 0; i < ordered.length; i++) {
+      const { si, fi } = ordered[i];
+      orderMap.set(`${si}-${fi}`, (i % 7) + 1);
+    }
+
     return fretboard.map((string, si) =>
       string.map((note, fi) => {
+        const key = `${si}-${fi}`;
+        if (boxNotes.has(key)) {
+          return { ...note, degree: orderMap.get(key)! };
+        }
         if (note.role === 'nonScale') return note;
-        if (boxNotes.has(`${si}-${fi}`)) return note;
-        return { ...note, role: 'outOfBox' as NoteRole };
+        return { ...note, role: 'outOfBox' as NoteRole, degree: null };
       }),
     );
   }
