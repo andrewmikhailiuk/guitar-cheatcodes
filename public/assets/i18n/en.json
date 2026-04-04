@@ -72,7 +72,22 @@
     "intervals": "Intervals",
     "noteNames": "Notes",
     "whyC": "Why C and not A? In medieval times the alphabet started from A — the lowest note of the system. Later, when major scale became dominant, C major (no sharps/flats) became the reference point. The letters stayed but the starting point shifted to C.",
-    "character": "Character"
+    "character": "Character",
+    "intervalRef": "Interval Reference"
+  },
+  "intRef": {
+    "1": "Unison — root note, home base",
+    "b2": "Minor 2nd — 1 semitone, tense, dissonant",
+    "2": "Major 2nd — 2 semitones, neutral step",
+    "b3": "Minor 3rd — 3 semitones, makes it minor (sad)",
+    "3": "Major 3rd — 4 semitones, makes it major (bright)",
+    "4": "Perfect 4th — 5 semitones, stable, open",
+    "b5": "Tritone — 6 semitones, devil's interval, maximum tension",
+    "5": "Perfect 5th — 7 semitones, power chord, strong",
+    "b6": "Minor 6th — 8 semitones, dark, dramatic",
+    "6": "Major 6th — 9 semitones, warm, jazzy",
+    "b7": "Minor 7th — 10 semitones, bluesy, wants to resolve",
+    "7": "Major 7th — 11 semitones, dreamy, almost home"
   },
   "character": {
     "dorian": "Minor with bright 6th. Jazz, funk, blues-rock.",
