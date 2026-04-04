@@ -56,6 +56,7 @@ export class NoteService {
 
   /**
    * Compute a 3-notes-per-string box position.
+   * Each string continues the scale sequence from where the previous left off.
    * Returns a Set of "stringIndex-fretIndex" keys for notes in the box.
    */
   compute3NPSBox(
@@ -66,52 +67,54 @@ export class NoteService {
     totalFrets: number,
   ): Set<string> {
     const box = new Set<string>();
+    const numDegrees = scaleIntervals.length;
 
-    // Find scale note frets for each string
-    const scaleFretsPerString: number[][] = openStringMidis.map((openMidi) => {
-      const frets: number[] = [];
-      for (let f = 0; f <= totalFrets; f++) {
-        const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
-        if (scaleIntervals.includes(interval)) {
-          frets.push(f);
+    // For each string, build fret → degreeIdx mapping (sorted by fret)
+    const stringNotes: { fret: number; degreeIdx: number }[][] =
+      openStringMidis.map((openMidi) => {
+        const notes: { fret: number; degreeIdx: number }[] = [];
+        for (let f = 0; f <= totalFrets; f++) {
+          const interval = (((openMidi + f) % 12) - rootIndex + 12) % 12;
+          const idx = scaleIntervals.indexOf(interval);
+          if (idx >= 0) {
+            notes.push({ fret: f, degreeIdx: idx });
+          }
         }
-      }
-      return frets;
-    });
+        return notes;
+      });
 
-    // Find starting fret on lowest string for the given degree
-    const startInterval = scaleIntervals[startDegree];
-    const lowestFrets = scaleFretsPerString[0];
-    const startFret = lowestFrets.find((f) => {
-      const interval = (((openStringMidis[0] + f) % 12) - rootIndex + 12) % 12;
-      return interval === startInterval;
-    });
+    let currentDegreeIdx = startDegree;
+    let refFret = -1;
 
-    if (startFret === undefined) return box;
-
-    let refFret = startFret;
+    // Find initial refFret on lowest string
+    const firstHit = stringNotes[0].find((n) => n.degreeIdx === startDegree);
+    if (!firstHit) return box;
+    refFret = firstHit.fret;
 
     for (let s = 0; s < openStringMidis.length; s++) {
-      const frets = scaleFretsPerString[s];
+      const notes = stringNotes[s];
 
-      // Find first scale fret >= refFret
-      let bestIdx = frets.length - 3;
-      for (let i = 0; i < frets.length; i++) {
-        if (frets[i] >= refFret) {
-          bestIdx = i;
-          break;
+      // Find the note with currentDegreeIdx closest to refFret
+      let bestIdx = -1;
+      let bestDist = Infinity;
+      for (let i = 0; i < notes.length; i++) {
+        if (notes[i].degreeIdx === currentDegreeIdx) {
+          const dist = Math.abs(notes[i].fret - refFret);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
         }
       }
 
-      // Ensure room for 3 notes
-      bestIdx = Math.min(bestIdx, frets.length - 3);
-      bestIdx = Math.max(bestIdx, 0);
+      if (bestIdx < 0 || bestIdx + 2 >= notes.length) continue;
 
-      for (let n = 0; n < 3 && bestIdx + n < frets.length; n++) {
-        box.add(`${s}-${frets[bestIdx + n]}`);
+      for (let n = 0; n < 3; n++) {
+        box.add(`${s}-${notes[bestIdx + n].fret}`);
       }
 
-      refFret = frets[bestIdx];
+      refFret = notes[bestIdx].fret;
+      currentDegreeIdx = (currentDegreeIdx + 3) % numDegrees;
     }
 
     return box;
