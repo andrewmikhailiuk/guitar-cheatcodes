@@ -37,8 +37,10 @@ export class ScalesComponent implements OnInit {
   readonly selectedTuningId = signal('e-standard');
 
   ngOnInit(): void {
-    this.selectedMode.set(this.storage.get<ModeName>('selectedMode', 'phrygian'));
-    this.selectedRoot.set(this.storage.get<NoteName>('selectedRoot', 'E'));
+    const mode = this.storage.get<ModeName>('selectedMode', 'phrygian');
+    const scale = SCALES.find((s) => s.name === mode)!;
+    this.selectedMode.set(mode);
+    this.selectedRoot.set(scale.defaultRoot as NoteName);
     this.selectedBox.set(this.storage.get<number>('selectedBox', 0));
     this.selectedTuningId.set(this.storage.get('scaleTuning', 'e-standard'));
   }
