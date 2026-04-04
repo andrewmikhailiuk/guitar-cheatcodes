@@ -68,6 +68,10 @@ export class ScalesComponent implements OnInit {
     const mode = (event.target as HTMLSelectElement).value as ModeName;
     this.selectedMode.set(mode);
     this.storage.set('selectedMode', mode);
+
+    const scale = SCALES.find((s) => s.name === mode)!;
+    this.selectedRoot.set(scale.defaultRoot as NoteName);
+    this.storage.set('selectedRoot', scale.defaultRoot);
   }
 
   onRootChange(event: Event): void {
@@ -80,6 +84,14 @@ export class ScalesComponent implements OnInit {
     const box = parseInt((event.target as HTMLSelectElement).value, 10);
     this.selectedBox.set(box);
     this.storage.set('selectedBox', box);
+  }
+
+  resetFilters(): void {
+    const scale = this.currentScale();
+    this.selectedRoot.set(scale.defaultRoot as NoteName);
+    this.selectedBox.set(0);
+    this.storage.set('selectedRoot', scale.defaultRoot);
+    this.storage.set('selectedBox', 0);
   }
 
   onNoteClick(note: FretNote): void {

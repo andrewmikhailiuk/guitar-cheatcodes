@@ -10,4 +10,5 @@ export interface ScaleDefinition {
   name: ModeName;
   labelKey: string;
   intervals: number[];
+  defaultRoot: string;
 }

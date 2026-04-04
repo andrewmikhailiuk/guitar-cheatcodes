@@ -18,7 +18,8 @@
     "mixolydian": "Миксолидийский",
     "box": "Бокс",
     "allFrets": "Все",
-    "boxN": "Бокс {{n}}"
+    "boxN": "Бокс {{n}}",
+    "reset": "Сброс"
   },
   "tunings": {
     "tuning": "Строй",

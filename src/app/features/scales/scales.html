@@ -40,6 +40,13 @@
         }
       </select>
     </div>
+
+    <button
+      class="self-end px-3 py-2 text-sm border border-fret-line rounded hover:bg-fret-line transition-colors"
+      (click)="resetFilters()"
+    >
+      {{ 'scales.reset' | transloco }}
+    </button>
   </div>
 
   <app-fretboard

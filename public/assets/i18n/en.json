@@ -18,7 +18,8 @@
     "mixolydian": "Mixolydian",
     "box": "Box",
     "allFrets": "All",
-    "boxN": "Box {{n}}"
+    "boxN": "Box {{n}}",
+    "reset": "Reset"
   },
   "tunings": {
     "tuning": "Tuning",
