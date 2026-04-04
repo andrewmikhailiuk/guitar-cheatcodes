@@ -19,7 +19,7 @@ export class FretboardComponent {
   );
 
   readonly gridColumns = computed(
-    () => `40px repeat(${this.totalFrets()}, minmax(28px, 1fr))`,
+    () => `40px repeat(${this.totalFrets() + 1}, minmax(28px, 1fr))`,
   );
 
   isMarkerFret(fret: number): boolean {
