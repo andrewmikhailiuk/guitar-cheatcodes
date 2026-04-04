@@ -68,4 +68,10 @@
     [showDegrees]="selectedBox() !== 0"
     (noteClicked)="onNoteClick($event)"
   />
+
+  <app-cheat-sheet
+    [rootName]="selectedRoot()"
+    [intervals]="currentPenta().intervals"
+    [characterKey]="currentPenta().characterKey"
+  />
 </div>

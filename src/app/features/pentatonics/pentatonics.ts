@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
+import { CheatSheetComponent } from '../../shared/cheat-sheet/cheat-sheet';
 import { NoteService } from '../../core/services/note.service';
 import { AudioService } from '../../core/services/audio.service';
 import { StorageService } from '../../core/services/storage.service';
@@ -17,7 +18,7 @@ import { noteNameToIndex } from '../../core/utils/music.utils';
 
 @Component({
   selector: 'app-pentatonics',
-  imports: [FretboardComponent, TranslocoModule],
+  imports: [FretboardComponent, CheatSheetComponent, TranslocoModule],
   templateUrl: './pentatonics.html',
 })
 export class PentatonicsComponent {

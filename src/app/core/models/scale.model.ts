@@ -8,8 +8,9 @@ export type ModeName =
   | 'lydian';
 
 export interface ScaleDefinition {
-  name: ModeName;
+  name: string;
   labelKey: string;
   intervals: number[];
   defaultRoot: string;
+  characterKey?: string;
 }

@@ -36,3 +36,19 @@ export function getNoteRole(
 
   return scaleIntervals.includes(interval) ? 'scale' : 'nonScale';
 }
+
+const INTERVAL_NAMES: Record<number, string> = {
+  0: '1', 1: 'b2', 2: '2', 3: 'b3', 4: '3', 5: '4',
+  6: 'b5', 7: '5', 8: 'b6', 9: '6', 10: 'b7', 11: '7',
+};
+
+export function getIntervalFormula(intervals: number[]): string {
+  return intervals.map((i) => INTERVAL_NAMES[i] ?? String(i)).join(' ');
+}
+
+export function getScaleNotes(rootName: NoteName, intervals: number[]): string {
+  const rootIdx = noteNameToIndex(rootName);
+  return intervals
+    .map((i) => CHROMATIC_NOTES[(rootIdx + i) % 12])
+    .join(' ');
+}

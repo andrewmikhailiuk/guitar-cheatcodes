@@ -65,6 +65,26 @@
     "playRiff": "Play Riff",
     "stop": "Stop"
   },
+  "cheat": {
+    "notes": "Notes",
+    "formula": "Formula",
+    "character": "Character"
+  },
+  "character": {
+    "dorian": "Minor with bright 6th. Jazz, funk, blues-rock.",
+    "phrygian": "Dark, Spanish/Eastern. Death metal, flamenco.",
+    "locrian": "Darkest, unstable. Diminished 5th. Extreme metal.",
+    "ionian": "Standard major. Bright, happy.",
+    "aeolian": "Natural minor. Sad, melancholic.",
+    "mixolydian": "Major with flat 7th. Bluesy, rock.",
+    "lydian": "Major with sharp 4th. Dreamy, floating.",
+    "major": "Standard major scale. Bright, resolved.",
+    "naturalMinor": "Natural minor. Sad, dark.",
+    "harmonicMinor": "Minor with major 7th. Neoclassical, Eastern.",
+    "melodicMinor": "Minor with major 6th and 7th. Jazz, fusion.",
+    "minorPenta": "Blues/rock foundation. 5 notes, no weak tones.",
+    "majorPenta": "Bright, open. Country, pop, rock."
+  },
   "language": {
     "switch": "RU"
   }
