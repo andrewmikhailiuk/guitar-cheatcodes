@@ -7,7 +7,7 @@
     "tunings": "Tunings",
     "eq": "EQ"
   },
-  "scales": {
+  "gammas": {
     "mode": "Scale",
     "root": "Root",
     "ionian": "Ionian (Major)",

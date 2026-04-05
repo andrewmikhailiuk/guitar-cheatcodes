@@ -31,15 +31,14 @@ export class GammasComponent {
   readonly tunings = TUNINGS;
   readonly boxOptions = [0, 1, 2, 3, 4, 5];
 
-  private readonly initGamma = this.storage.get<string>('selectedGamma', 'major');
+  private readonly initGamma = this.storage.get<string>('selectedGamma', 'phrygian');
 
   readonly selectedGamma = signal(this.initGamma);
   readonly selectedRoot = signal<NoteName>(
-    (GAMMAS.find((g) => g.name === this.initGamma)?.defaultRoot ?? 'C') as NoteName,
+    (GAMMAS.find((g) => g.name === this.initGamma)?.defaultRoot ?? 'E') as NoteName,
   );
   readonly selectedBox = signal(this.storage.get<number>('gammaBox', 0));
   readonly selectedTuningId = signal(this.storage.get('gammaTuning', 'e-standard'));
-
 
   readonly currentGamma = computed(() =>
     GAMMAS.find((g) => g.name === this.selectedGamma())!,
@@ -65,7 +64,9 @@ export class GammasComponent {
     if (box === 0) return fb;
 
     const tuning = this.currentTuning();
-    const baseMidi = tuning.stringCount === 7 ? E_STANDARD_7_MIDI : E_STANDARD_MIDI;
+    const baseMidi = tuning.stringCount === 7
+      ? E_STANDARD_7_MIDI
+      : E_STANDARD_MIDI;
     const openMidis = baseMidi.map((m, i) => m + tuning.offsets[i]);
 
     const boxNotes = this.noteService.computeBox(
@@ -92,7 +93,8 @@ export class GammasComponent {
   }
 
   onRootChange(event: Event): void {
-    this.selectedRoot.set((event.target as HTMLSelectElement).value as NoteName);
+    const root = (event.target as HTMLSelectElement).value as NoteName;
+    this.selectedRoot.set(root);
   }
 
   onBoxChange(event: Event): void {

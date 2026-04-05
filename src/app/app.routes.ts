@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: 'gammas',
     loadComponent: () =>
-      import('./features/scales/scales').then((m) => m.ScalesComponent),
+      import('./features/gammas/gammas').then((m) => m.GammasComponent),
   },
   {
     path: 'tunings',
