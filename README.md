@@ -1,6 +1,11 @@
 # Guitarcodes
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
+Hi, I made myself a cheat sheet for learning guitar and I'm happy to share it with everyone.
+
+Feedback, PRs, and suggestions are very welcome.
+
+Available online: https://guitarcodes.paparoot.ru/
+
 
 ## Development server
 
