@@ -22,6 +22,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 export class TabNavComponent {
   readonly tabs = [
     { path: '/gammas', labelKey: 'tabs.gammas' },
+    { path: '/chords', labelKey: 'tabs.chords' },
     { path: '/tunings', labelKey: 'tabs.tunings' },
     { path: '/eq', labelKey: 'tabs.eq' },
     { path: '/metronome', labelKey: 'tabs.metronome' },

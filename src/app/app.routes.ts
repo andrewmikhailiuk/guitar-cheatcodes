@@ -7,6 +7,11 @@ export const routes: Routes = [
       import('./features/gammas/gammas').then((m) => m.GammasComponent),
   },
   {
+    path: 'chords',
+    loadComponent: () =>
+      import('./features/chords/chords').then((m) => m.ChordsComponent),
+  },
+  {
     path: 'tunings',
     loadComponent: () =>
       import('./features/tunings/tunings').then((m) => m.TuningsComponent),
