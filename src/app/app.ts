@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
 import { TabNavComponent } from './layout/tab-nav/tab-nav';
@@ -23,6 +24,7 @@ import { StorageService } from './core/services/storage.service';
 export class App implements OnInit {
   private readonly router = inject(Router);
   private readonly storage = inject(StorageService);
+  private readonly swUpdate = inject(SwUpdate);
 
   ngOnInit(): void {
     const lastTab = this.storage.get<string>('lastTab', '');
@@ -35,5 +37,11 @@ export class App implements OnInit {
       .subscribe((e) => {
         this.storage.set('lastTab', (e as NavigationEnd).urlAfterRedirects);
       });
+
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates
+        .pipe(filter((e): e is VersionReadyEvent => e.type === 'VERSION_READY'))
+        .subscribe(() => document.location.reload());
+    }
   }
 }
