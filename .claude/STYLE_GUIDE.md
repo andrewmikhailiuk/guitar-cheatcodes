@@ -10,10 +10,12 @@ All colors defined in `src/styles.css` via CSS custom properties:
 | `--color-bg-fretboard` | `#1a1a1a` | Fretboard cell background, card backgrounds |
 | `--color-text-primary` | `#cccccc` | Main text |
 | `--color-fret-line` | `#333333` | Borders, dividers, fret lines |
-| `--color-note-root` | `#44cc66` | Root/tonic note (green) |
+| `--color-note-root` | `#ff4444` | Root/tonic note (red) |
 | `--color-note-scale` | `#888888` | Regular scale notes |
 | `--color-note-non-scale` | `#222222` | Non-scale notes (nearly invisible) |
 | `--color-note-neutral` | `#444444` | Neutral mode (tunings tab) |
+| `--color-text-muted` | `#666666` | Fret numbers, subtle UI elements |
+| `--color-text-secondary` | `#999999` | Marker fret numbers, string labels |
 
 ### Text Colors (Tailwind)
 
@@ -57,9 +59,9 @@ All colors defined in `src/styles.css` via CSS custom properties:
 
 ## Data Architecture
 
-### Scale Definition (`core/models/scale.model.ts`)
+### Gamma Definition (`core/models/gamma.model.ts`)
 ```typescript
-interface ScaleDefinition {
+interface GammaDefinition {
   name: string;           // internal ID
   labelKey: string;       // i18n key for display name
   intervals: number[];    // semitone intervals from root [0, 2, 4, 5, ...]
@@ -68,7 +70,7 @@ interface ScaleDefinition {
 }
 ```
 
-### All scales in one list (`core/data/scales.data.ts`)
+### All gammas in one list (`core/data/gammas.data.ts`)
 11 scales: 7 modes + harmonic/melodic minor + 2 pentatonics
 
 ### CAGED Box Algorithm (`core/services/note.service.ts`)
@@ -81,7 +83,7 @@ interface ScaleDefinition {
 ### Note Roles
 | Role | Color | When |
 |------|-------|------|
-| `root` | Green (`note-root`) | Interval = 0 from root |
+| `root` | Red (`note-root`) | Interval = 0 from root |
 | `scale` | Grey (`note-scale`) | In scale, not root |
 | `nonScale` | Dark (`note-non-scale`) | Not in scale |
 | `neutral` | Mid-grey (`note-neutral`) | No scale context (tunings tab) |
@@ -104,6 +106,6 @@ interface ScaleDefinition {
 
 | Path | Component | Description |
 |------|-----------|-------------|
-| `/gammas` | ScalesComponent | All scales with fretboard + boxes |
+| `/gammas` | GammasComponent | All scales with fretboard + boxes |
 | `/tunings` | TuningsComponent | Tuning reference |
 | `/eq` | EqComponent | EQ cheat sheet |
