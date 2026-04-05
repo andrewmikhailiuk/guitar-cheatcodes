@@ -6,7 +6,7 @@ import { noteNameToIndex } from '../../core/utils/music.utils';
 @Component({
   selector: 'app-chord-diagram',
   template: `
-    <div class="inline-block">
+    <div class="inline-block mr-[27px]">
       <svg
         [attr.width]="svgWidth"
         [attr.height]="svgHeight"
