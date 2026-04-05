@@ -73,7 +73,7 @@
         type="range" min="0" max="1" step="0.05"
         [value]="eq().gain"
         (input)="updateBand('gain', $event)"
-        class="flex-1 accent-note-tritone"
+        class="flex-1 accent-note-root"
       />
       <span class="w-12 text-right font-mono text-xs">{{ (eq().gain * 100).toFixed(0) }}%</span>
     </div>
