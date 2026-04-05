@@ -1,0 +1,40 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx ng build --configuration production
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT || 22 }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Upload build via rsync
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }}" \
+            dist/guitarcodes/browser/ \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/guitarcodes.paparoot.ru/public_html_build/
+
+      - name: Swap directories
+        run: |
+          ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            'cd ~/guitarcodes.paparoot.ru && rm -rf public_html_old && mv public_html public_html_old && mv public_html_build public_html'
