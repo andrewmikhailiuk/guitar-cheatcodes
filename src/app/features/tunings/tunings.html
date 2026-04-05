@@ -1,16 +1,39 @@
 <div class="p-4">
-  <div class="mb-4">
-    <label class="block text-xs text-gray-400 mb-1">{{ 'tunings.tuning' | transloco }}</label>
+  <!-- Select + Category pills in one row -->
+  <div class="flex flex-wrap items-center gap-3 mb-4">
     <select
       class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
       (change)="onTuningChange($event)"
     >
-      @for (tuning of tunings; track tuning.id) {
+      @for (tuning of filteredTunings(); track tuning.id) {
         <option [value]="tuning.id" [selected]="tuning.id === selectedTuningId()">
           {{ tuning.labelKey | transloco }} ({{ tuning.openStrings.join(' ') }})
         </option>
       }
     </select>
+
+    <div class="flex gap-1.5">
+      @for (cat of categories; track cat.id) {
+        <button
+          class="px-3 py-1.5 text-xs rounded-full border transition-colors"
+          [class]="selectedCategory() === cat.id
+            ? 'border-note-root bg-note-root/15 text-note-root'
+            : 'border-fret-line text-gray-400 hover:text-white'"
+          (click)="selectCategory(cat.id)"
+        >
+          {{ cat.labelKey | transloco }}
+        </button>
+      }
+    </div>
+
+    <!-- Info inline -->
+    @if (isReference()) {
+      <span class="text-xs text-gray-500 italic">{{ currentTuning().descriptionKey | transloco }}</span>
+    } @else {
+      <span class="text-xs text-gray-500">
+        <span class="text-note-root">↓</span> {{ currentTuning().descriptionKey | transloco }}
+      </span>
+    }
   </div>
 
   <app-fretboard
