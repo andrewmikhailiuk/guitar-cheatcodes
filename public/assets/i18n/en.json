@@ -92,6 +92,15 @@
     "minorPenta": "Blues and rock foundation. 5 notes, everything sounds good together.",
     "majorPenta": "Bright, open sound. Country, pop, rock."
   },
+  "solfege": {
+    "C": "Do",
+    "D": "Re",
+    "E": "Mi",
+    "F": "Fa",
+    "G": "Sol",
+    "A": "La",
+    "B": "Si"
+  },
   "language": {
     "switch": "RU"
   }

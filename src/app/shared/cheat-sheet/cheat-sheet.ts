@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { NoteName } from '../../core/models/note.model';
 import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils';
@@ -25,10 +25,11 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
         <span class="text-gray-400">{{ 'cheat.formula' | transloco }}:</span>
         <span class="font-mono text-sm">
           @for (sym of formulaSymbols(); track sym) {
-            <span
-              class="cursor-pointer hover:text-note-root transition-colors"
+            <button
+              type="button"
+              class="cursor-pointer hover:text-note-root transition-colors bg-transparent border-none p-0 font-[inherit] text-[length:inherit] text-[inherit]"
               (click)="flashInterval(sym)"
-            >{{ sym }}</span>
+            >{{ sym }}</button>
             @if (!$last) {
               <span class="text-fret-line mx-0.5">·</span>
             }
@@ -71,6 +72,9 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
   `,
 })
 export class CheatSheetComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private flashTimeout: ReturnType<typeof setTimeout> | null = null;
+
   readonly rootName = input.required<NoteName>();
   readonly intervals = input.required<number[]>();
   readonly characterKey = input<string | undefined>();
@@ -86,10 +90,17 @@ export class CheatSheetComponent {
     getIntervalFormula(this.intervals()).split(' '),
   );
 
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.flashTimeout) clearTimeout(this.flashTimeout);
+    });
+  }
+
   flashInterval(symbol: string): void {
+    if (this.flashTimeout) clearTimeout(this.flashTimeout);
     this.showRef.set(true);
     this.flashedInterval.set(symbol);
-    setTimeout(() => this.flashedInterval.set(null), 1500);
+    this.flashTimeout = setTimeout(() => this.flashedInterval.set(null), 1500);
   }
 
   readonly intervalRef = [

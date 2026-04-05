@@ -16,12 +16,11 @@ export class TuningsComponent {
   private readonly noteService = inject(NoteService);
   private readonly audioService = inject(AudioService);
   private readonly storage = inject(StorageService);
-
   readonly tunings = TUNINGS;
   readonly selectedTuningId = signal(this.storage.get('selectedTuning', 'e-standard'));
 
   readonly currentTuning = computed(() =>
-    TUNINGS.find((t) => t.id === this.selectedTuningId())!,
+    TUNINGS.find((t) => t.id === this.selectedTuningId()) ?? TUNINGS[0],
   );
 
   readonly fretboard = computed(() => {

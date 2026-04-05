@@ -41,11 +41,11 @@ export class GammasComponent {
   readonly selectedTuningId = signal(this.storage.get('gammaTuning', 'e-standard'));
 
   readonly currentGamma = computed(() =>
-    GAMMAS.find((g) => g.name === this.selectedGamma())!,
+    GAMMAS.find((g) => g.name === this.selectedGamma()) ?? GAMMAS[0],
   );
 
   readonly currentTuning = computed(() =>
-    TUNINGS.find((t) => t.id === this.selectedTuningId())!,
+    TUNINGS.find((t) => t.id === this.selectedTuningId()) ?? TUNINGS[0],
   );
 
   private readonly baseFretboard = computed(() => {
@@ -88,7 +88,7 @@ export class GammasComponent {
     this.selectedGamma.set(name);
     this.storage.set('selectedGamma', name);
 
-    const gamma = GAMMAS.find((g) => g.name === name)!;
+    const gamma = GAMMAS.find((g) => g.name === name) ?? GAMMAS[0];
     this.selectedRoot.set(gamma.defaultRoot as NoteName);
   }
 
