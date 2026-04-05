@@ -24,5 +24,6 @@ export class TabNavComponent {
     { path: '/gammas', labelKey: 'tabs.gammas' },
     { path: '/tunings', labelKey: 'tabs.tunings' },
     { path: '/eq', labelKey: 'tabs.eq' },
+    { path: '/metronome', labelKey: 'tabs.metronome' },
   ];
 }

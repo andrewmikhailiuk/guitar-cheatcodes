@@ -36,6 +36,7 @@ export class AudioService {
     osc.connect(gain);
     gain.connect(ctx.destination);
 
+    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + durationMs / 1000);
   }
@@ -88,6 +89,8 @@ export class AudioService {
 
       osc.connect(env);
       env.connect(distortion);
+      this.activeNodes.push(osc, env);
+      osc.onended = () => { osc.disconnect(); env.disconnect(); };
 
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.1);
@@ -107,6 +110,10 @@ export class AudioService {
       node.disconnect();
     }
     this.activeNodes = [];
+  }
+
+  getAudioContext(): AudioContext {
+    return this.getContext();
   }
 
   private makePeakingFilter(

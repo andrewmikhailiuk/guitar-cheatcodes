@@ -5,7 +5,8 @@
   "tabs": {
     "gammas": "Гаммы",
     "tunings": "Строи",
-    "eq": "Эквалайзер"
+    "eq": "Эквалайзер",
+    "metronome": "Метроном"
   },
   "gammas": {
     "mode": "Гамма",
@@ -100,6 +101,13 @@
     "G": "Соль",
     "A": "Ля",
     "B": "Си"
+  },
+  "metronome": {
+    "bpm": "BPM",
+    "tap": "Тап",
+    "start": "Старт",
+    "stop": "Стоп",
+    "timeSignature": "Размер"
   },
   "language": {
     "switch": "EN"

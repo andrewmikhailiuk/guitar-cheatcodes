@@ -5,7 +5,8 @@
   "tabs": {
     "gammas": "Scales",
     "tunings": "Tunings",
-    "eq": "EQ"
+    "eq": "EQ",
+    "metronome": "Metronome"
   },
   "gammas": {
     "mode": "Scale",
@@ -100,6 +101,13 @@
     "G": "Sol",
     "A": "La",
     "B": "Si"
+  },
+  "metronome": {
+    "bpm": "BPM",
+    "tap": "Tap",
+    "start": "Start",
+    "stop": "Stop",
+    "timeSignature": "Time"
   },
   "language": {
     "switch": "RU"

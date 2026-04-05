@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { CheatSheetComponent } from '../../shared/cheat-sheet/cheat-sheet';
@@ -25,20 +26,46 @@ export class GammasComponent {
   private readonly noteService = inject(NoteService);
   private readonly audioService = inject(AudioService);
   private readonly storage = inject(StorageService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly gammas = GAMMAS;
   readonly roots = CHROMATIC_NOTES;
   readonly tunings = TUNINGS;
   readonly boxOptions = [0, 1, 2, 3, 4, 5];
 
-  private readonly initGamma = this.storage.get<string>('selectedGamma', 'phrygian');
-
+  private readonly initGamma = this.resolveInitGamma();
   readonly selectedGamma = signal(this.initGamma);
-  readonly selectedRoot = signal<NoteName>(
-    (GAMMAS.find((g) => g.name === this.initGamma)?.defaultRoot ?? 'E') as NoteName,
-  );
-  readonly selectedBox = signal(this.storage.get<number>('gammaBox', 0));
-  readonly selectedTuningId = signal(this.storage.get('gammaTuning', 'e-standard'));
+  readonly selectedRoot = signal<NoteName>(this.resolveInitRoot());
+  readonly selectedBox = signal(this.resolveInitBox());
+  readonly selectedTuningId = signal(this.resolveInitTuning());
+
+  private resolveInitGamma(): string {
+    const q = this.route.snapshot.queryParamMap.get('g');
+    if (q && GAMMAS.some((g) => g.name === q)) return q;
+    return this.storage.get<string>('selectedGamma', 'phrygian');
+  }
+
+  private resolveInitRoot(): NoteName {
+    const q = this.route.snapshot.queryParamMap.get('r');
+    if (q && (CHROMATIC_NOTES as readonly string[]).includes(q)) return q as NoteName;
+    return (GAMMAS.find((g) => g.name === this.initGamma)?.defaultRoot ?? 'E') as NoteName;
+  }
+
+  private resolveInitBox(): number {
+    const q = this.route.snapshot.queryParamMap.get('b');
+    if (q !== null) {
+      const n = parseInt(q, 10);
+      if (n >= 0 && n <= 5) return n;
+    }
+    return this.storage.get<number>('gammaBox', 0);
+  }
+
+  private resolveInitTuning(): string {
+    const q = this.route.snapshot.queryParamMap.get('t');
+    if (q && TUNINGS.some((t) => t.id === q)) return q;
+    return this.storage.get('gammaTuning', 'e-standard');
+  }
 
   readonly currentGamma = computed(() =>
     GAMMAS.find((g) => g.name === this.selectedGamma()) ?? GAMMAS[0],
@@ -90,23 +117,27 @@ export class GammasComponent {
 
     const gamma = GAMMAS.find((g) => g.name === name) ?? GAMMAS[0];
     this.selectedRoot.set(gamma.defaultRoot as NoteName);
+    this.syncUrl();
   }
 
   onRootChange(event: Event): void {
     const root = (event.target as HTMLSelectElement).value as NoteName;
     this.selectedRoot.set(root);
+    this.syncUrl();
   }
 
   onBoxChange(event: Event): void {
     const box = parseInt((event.target as HTMLSelectElement).value, 10);
     this.selectedBox.set(box);
     this.storage.set('gammaBox', box);
+    this.syncUrl();
   }
 
   onTuningChange(event: Event): void {
     const id = (event.target as HTMLSelectElement).value;
     this.selectedTuningId.set(id);
     this.storage.set('gammaTuning', id);
+    this.syncUrl();
   }
 
   resetFilters(): void {
@@ -116,6 +147,22 @@ export class GammasComponent {
     this.selectedTuningId.set('e-standard');
     this.storage.set('gammaBox', 0);
     this.storage.set('gammaTuning', 'e-standard');
+    this.syncUrl();
+  }
+
+  private syncUrl(): void {
+    const params: Record<string, string> = {};
+    const gamma = this.selectedGamma();
+    const root = this.selectedRoot();
+    const box = this.selectedBox();
+    const tuning = this.selectedTuningId();
+
+    if (gamma !== 'phrygian') params['g'] = gamma;
+    if (root !== (GAMMAS.find((g) => g.name === gamma)?.defaultRoot ?? 'E')) params['r'] = root;
+    if (box !== 0) params['b'] = String(box);
+    if (tuning !== 'e-standard') params['t'] = tuning;
+
+    this.router.navigate([], { queryParams: params, replaceUrl: true });
   }
 
   onNoteClick(note: FretNote): void {

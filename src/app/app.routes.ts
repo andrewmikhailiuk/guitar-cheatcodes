@@ -16,6 +16,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/eq/eq').then((m) => m.EqComponent),
   },
+  {
+    path: 'metronome',
+    loadComponent: () =>
+      import('./features/metronome/metronome').then((m) => m.MetronomeComponent),
+  },
   { path: '', redirectTo: 'gammas', pathMatch: 'full' },
   { path: '**', redirectTo: 'gammas' },
 ];

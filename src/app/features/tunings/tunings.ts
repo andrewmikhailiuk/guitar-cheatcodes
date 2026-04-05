@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { FretboardComponent } from '../../shared/fretboard/fretboard';
 import { NoteService } from '../../core/services/note.service';
@@ -16,8 +17,17 @@ export class TuningsComponent {
   private readonly noteService = inject(NoteService);
   private readonly audioService = inject(AudioService);
   private readonly storage = inject(StorageService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
   readonly tunings = TUNINGS;
-  readonly selectedTuningId = signal(this.storage.get('selectedTuning', 'e-standard'));
+  readonly selectedTuningId = signal(this.resolveInitTuning());
+
+  private resolveInitTuning(): string {
+    const q = this.route.snapshot.queryParamMap.get('t');
+    if (q && TUNINGS.some((t) => t.id === q)) return q;
+    return this.storage.get('selectedTuning', 'e-standard');
+  }
 
   readonly currentTuning = computed(() =>
     TUNINGS.find((t) => t.id === this.selectedTuningId()) ?? TUNINGS[0],
@@ -39,6 +49,14 @@ export class TuningsComponent {
     const id = (event.target as HTMLSelectElement).value;
     this.selectedTuningId.set(id);
     this.storage.set('selectedTuning', id);
+    this.syncUrl();
+  }
+
+  private syncUrl(): void {
+    const params: Record<string, string> = {};
+    const tuning = this.selectedTuningId();
+    if (tuning !== 'e-standard') params['t'] = tuning;
+    this.router.navigate([], { queryParams: params, replaceUrl: true });
   }
 
   onNoteClick(note: FretNote): void {

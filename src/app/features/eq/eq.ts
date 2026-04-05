@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AudioService } from '../../core/services/audio.service';
 import { StorageService } from '../../core/services/storage.service';
@@ -15,12 +15,20 @@ const DEFAULT_EQ: EqSettings = { low: 0, lowMid: 0, highMid: 0, high: 0, gain: 0
 export class EqComponent implements OnInit {
   private readonly audioService = inject(AudioService);
   private readonly storage = inject(StorageService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly presets = EQ_PRESETS;
   readonly bands = FREQUENCY_BANDS;
 
   readonly eq = signal<EqSettings>(DEFAULT_EQ);
   readonly isPlaying = signal(false);
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.audioService.stopTestRiff();
+      this.isPlaying.set(false);
+    });
+  }
 
   ngOnInit(): void {
     this.eq.set(this.storage.get<EqSettings>('eqSettings', DEFAULT_EQ));
