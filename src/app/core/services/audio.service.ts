@@ -5,9 +5,11 @@ import { FREQUENCY_BANDS } from '../data/eq-presets.data';
 import { midiToFrequency } from '../utils/music.utils';
 
 const GAIN_FLOOR = 0.001;
-const MASTER_GAIN = 0.4;
+const MASTER_GAIN = 0.35;
 const DISTORTION_CURVE_SAMPLES = 256;
-const DISTORTION_MULTIPLIER = 50;
+const DISTORTION_MULTIPLIER = 20;
+const CAB_SIM_FREQUENCY = 3500;
+const CAB_SIM_Q = 0.7;
 
 @Injectable({ providedIn: 'root' })
 export class AudioService {
@@ -53,10 +55,18 @@ export class AudioService {
 
     const ctx = this.getContext();
 
-    // Build EQ + distortion chain
+    // Distortion
     const distortion = ctx.createWaveShaper();
     distortion.curve = this.makeDistortionCurve(eq.gain);
+    distortion.oversample = '4x';
 
+    // Cabinet simulation — low-pass to tame harsh highs
+    const cab = ctx.createBiquadFilter();
+    cab.type = 'lowpass';
+    cab.frequency.value = CAB_SIM_FREQUENCY;
+    cab.Q.value = CAB_SIM_Q;
+
+    // EQ filters
     const filters = FREQUENCY_BANDS.map((band, i) =>
       this.makePeakingFilter(ctx, band.frequency, eq.bands[i]),
     );
@@ -64,15 +74,16 @@ export class AudioService {
     const master = ctx.createGain();
     master.gain.value = MASTER_GAIN;
 
-    // Chain: distortion → filter[0] → ... → filter[n] → master → destination
-    distortion.connect(filters[0]);
+    // Chain: distortion → cab → filter[0] → ... → filter[n] → master → destination
+    distortion.connect(cab);
+    cab.connect(filters[0]);
     for (let i = 0; i < filters.length - 1; i++) {
       filters[i].connect(filters[i + 1]);
     }
     filters[filters.length - 1].connect(master);
     master.connect(ctx.destination);
 
-    this.activeNodes = [distortion, ...filters, master];
+    this.activeNodes = [distortion, cab, ...filters, master];
 
     const playAt = (index: number) => {
       if (index >= riff.notes.length) {
@@ -92,8 +103,8 @@ export class AudioService {
 
         const duration = riff.noteDurationMs / 1000;
         env.gain.setValueAtTime(0, ctx.currentTime);
-        env.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.005);
-        env.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + duration * 0.8);
+        env.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.008);
+        env.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + duration);
 
         osc.connect(env);
         env.connect(distortion);
