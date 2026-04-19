@@ -57,20 +57,49 @@
         {{ preset.labelKey | transloco }}
       </button>
     }
-    <button
-      class="px-4 py-2 text-sm rounded border transition-colors ml-auto"
-      [class]="isPlaying()
-        ? 'border-note-root bg-note-root/20 text-note-root'
-        : 'border-fret-line hover:bg-fret-line'"
-      (click)="togglePlay()"
-    >
-      {{ isPlaying() ? ('eq.stop' | transloco) : ('eq.playRiff' | transloco) }}
-    </button>
+    <span class="ml-auto flex items-center gap-2">
+      @for (riff of riffs; track riff.id) {
+        <button
+          class="px-3 py-2 text-xs rounded border transition-colors"
+          [class]="activeRiff().id === riff.id
+            ? 'border-note-root/50 text-note-root'
+            : 'border-fret-line/50 text-gray-500 hover:border-fret-line'"
+          (click)="selectRiff(riff)"
+        >
+          {{ riff.labelKey | transloco }}
+        </button>
+      }
+      <button
+        class="px-4 py-2 text-sm rounded border transition-colors"
+        [class]="isPlaying()
+          ? 'border-note-root bg-note-root/20 text-note-root'
+          : 'border-fret-line hover:bg-fret-line'"
+        (click)="togglePlay()"
+      >
+        {{ isPlaying() ? ('eq.stop' | transloco) : ('eq.playRiff' | transloco) }}
+      </button>
+      <button
+        class="px-3 py-2 text-sm rounded border transition-colors"
+        [class]="looping()
+          ? 'border-note-root text-note-root'
+          : 'border-fret-line hover:bg-fret-line'"
+        (click)="looping.set(!looping())"
+        [title]="'eq.loop' | transloco"
+      >
+        &#x21BB;
+      </button>
+    </span>
   </div>
 
   @if (activePreset(); as preset) {
     <p class="text-sm text-gray-400 bg-fret-line/20 rounded px-3 py-2 mt-3 inline-block">
       {{ preset.descriptionKey | transloco }}
+    </p>
+  }
+  @if (activeRiff(); as riff) {
+    <p class="text-sm text-gray-400 bg-fret-line/20 rounded px-3 py-2 mt-3 inline-block"
+       [class.ml-3]="activePreset()">
+      {{ riff.descriptionKey | transloco }}
     </p>
   }
 </div>

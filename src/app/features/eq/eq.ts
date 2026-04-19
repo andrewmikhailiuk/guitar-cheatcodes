@@ -4,6 +4,7 @@ import { AudioService } from '../../core/services/audio.service';
 import { StorageService } from '../../core/services/storage.service';
 import { EqPreset, EqSettings } from '../../core/models/eq.model';
 import { EQ_PRESETS, FREQUENCY_BANDS } from '../../core/data/eq-presets.data';
+import { Riff, RIFFS } from '../../core/data/riffs.data';
 
 const BAND_COUNT = FREQUENCY_BANDS.length;
 const DEFAULT_EQ: EqSettings = { bands: new Array(BAND_COUNT).fill(0), gain: 0.5 };
@@ -20,10 +21,13 @@ export class EqComponent implements OnInit {
 
   readonly presets = EQ_PRESETS;
   readonly bands = FREQUENCY_BANDS;
+  readonly riffs = RIFFS;
 
   readonly eq = signal<EqSettings>(DEFAULT_EQ);
   readonly isPlaying = signal(false);
+  readonly looping = signal(false);
   readonly activePreset = signal<EqPreset | null>(null);
+  readonly activeRiff = signal<Riff>(RIFFS[0]);
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -47,6 +51,14 @@ export class EqComponent implements OnInit {
       this.eq.set({ ...preset.settings, bands: [...preset.settings.bands] });
       this.storage.set('eqSettings', preset.settings);
       this.activePreset.set(preset.descriptionKey ? preset : null);
+    }
+  }
+
+  selectRiff(riff: Riff): void {
+    this.activeRiff.set(riff);
+    if (this.isPlaying()) {
+      this.audioService.stopTestRiff();
+      this.play();
     }
   }
 
@@ -75,8 +87,19 @@ export class EqComponent implements OnInit {
       this.audioService.stopTestRiff();
       this.isPlaying.set(false);
     } else {
-      this.audioService.playTestRiff(this.eq(), () => this.isPlaying.set(false));
-      this.isPlaying.set(true);
+      this.play();
     }
+  }
+
+  private play(): void {
+    const onEnd = () => {
+      if (this.looping() && this.isPlaying()) {
+        this.play();
+      } else {
+        this.isPlaying.set(false);
+      }
+    };
+    this.audioService.playTestRiff(this.eq(), this.activeRiff(), onEnd);
+    this.isPlaying.set(true);
   }
 }

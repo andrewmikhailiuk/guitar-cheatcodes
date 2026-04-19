@@ -148,8 +148,19 @@
     "descDjent": "Срезанный саб-бас, тугой низ, хирургические верхние середины. Точный и современный. Meshuggah, Periphery.",
     "descRock": "Сбалансированный, лёгкий буст середины. Классика, полнота звука. AC/DC, Led Zeppelin.",
     "presetDefault": "Сброс",
-    "playRiff": "Играть рифф",
-    "stop": "Стоп"
+    "riffChug": "Чаг",
+    "riffGallop": "Галоп",
+    "riffChromatic": "Хроматика",
+    "riffTritone": "Тритон",
+    "riffSyncopated": "Джент",
+    "descChug": "Палм-мьют E пауэр-аккорд на ~140 BPM. Основа метал-ритма.",
+    "descGallop": "Триольный галоп E-G-A-B. Iron Maiden, пауэр-метал.",
+    "descChromatic": "Хроматический спуск E-Eb-D-Db-C. Тремоло-пикинг дэт-метала.",
+    "descTritone": "E и Bb с паузами. Дьявольский интервал. Black Sabbath, дум.",
+    "descSyncopated": "Синкопированные удары с паузами. Ритмический хаос в стиле Meshuggah.",
+    "playRiff": "Играть",
+    "stop": "Стоп",
+    "loop": "Повтор"
   },
   "cheat": {
     "notes": "Ноты",

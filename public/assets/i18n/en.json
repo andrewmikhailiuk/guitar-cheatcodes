@@ -148,8 +148,19 @@
     "descDjent": "Cut sub-bass, tight low end, surgical upper mids. Precise and modern. Meshuggah, Periphery.",
     "descRock": "Balanced with a slight mid boost. Classic and full. AC/DC, Led Zeppelin.",
     "presetDefault": "Default",
-    "playRiff": "Play Riff",
-    "stop": "Stop"
+    "riffChug": "Chug",
+    "riffGallop": "Gallop",
+    "riffChromatic": "Chromatic",
+    "riffTritone": "Tritone",
+    "riffSyncopated": "Djent",
+    "descChug": "Palm-muted E power chord at ~140 BPM. The backbone of metal rhythm.",
+    "descGallop": "Triplet gallop climbing E-G-A-B. Iron Maiden, power metal.",
+    "descChromatic": "Descending chromatic run E-Eb-D-Db-C. Death metal tremolo picking.",
+    "descTritone": "E to Bb with pauses. The devil's interval. Black Sabbath, doom.",
+    "descSyncopated": "Syncopated hits with rests. Meshuggah-style rhythmic chaos.",
+    "playRiff": "Play",
+    "stop": "Stop",
+    "loop": "Loop"
   },
   "cheat": {
     "notes": "Notes",
