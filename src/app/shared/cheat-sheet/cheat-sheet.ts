@@ -66,6 +66,9 @@ import { getIntervalFormula, getScaleNotes } from '../../core/utils/music.utils'
               </div>
             }
           </div>
+          <p class="mt-2 text-[10px] text-gray-500 italic leading-snug">
+            {{ 'intRef.footnote' | transloco }}
+          </p>
         }
       </div>
     </div>
