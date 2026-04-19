@@ -12,6 +12,7 @@ import { TranslocoModule } from '@jsverse/transloco';
           [routerLink]="tab.path"
           routerLinkActive="text-note-root border-b-2 border-note-root"
           class="px-4 py-3 text-sm transition-colors hover:text-white whitespace-nowrap"
+          (click)="blur($event)"
         >
           {{ tab.labelKey | transloco }}
         </a>
@@ -20,6 +21,10 @@ import { TranslocoModule } from '@jsverse/transloco';
   `,
 })
 export class TabNavComponent {
+  blur(e: Event): void {
+    (e.target as HTMLElement).blur();
+  }
+
   readonly tabs = [
     { path: '/gammas', labelKey: 'tabs.gammas' },
     { path: '/chords', labelKey: 'tabs.chords' },

@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { EqSettings } from '../models/eq.model';
+import { Riff } from '../data/riffs.data';
+import { FREQUENCY_BANDS } from '../data/eq-presets.data';
 import { midiToFrequency } from '../utils/music.utils';
 
 const GAIN_FLOOR = 0.001;
-const MASTER_GAIN = 0.4;
-const RIFF_INTERVAL_MS = 107;
+const MASTER_GAIN = 0.35;
 const DISTORTION_CURVE_SAMPLES = 256;
-const DISTORTION_MULTIPLIER = 50;
+const DISTORTION_MULTIPLIER = 20;
+const CAB_SIM_FREQUENCY = 3500;
+const CAB_SIM_Q = 0.7;
 
 @Injectable({ providedIn: 'root' })
 export class AudioService {
@@ -47,61 +50,72 @@ export class AudioService {
     osc.stop(ctx.currentTime + durationMs / 1000);
   }
 
-  playTestRiff(eq: EqSettings): void {
+  playTestRiff(eq: EqSettings, riff: Riff, onEnd?: () => void): void {
     this.stopTestRiff();
 
     const ctx = this.getContext();
 
-    // Build EQ + distortion chain
+    // Distortion
     const distortion = ctx.createWaveShaper();
     distortion.curve = this.makeDistortionCurve(eq.gain);
+    distortion.oversample = '4x';
 
-    const eqLow = this.makePeakingFilter(ctx, 100, eq.low);
-    const eqLowMid = this.makePeakingFilter(ctx, 200, eq.lowMid);
-    const eqHighMid = this.makePeakingFilter(ctx, 3000, eq.highMid);
-    const eqHigh = this.makePeakingFilter(ctx, 6500, eq.high);
+    // Cabinet simulation — low-pass to tame harsh highs
+    const cab = ctx.createBiquadFilter();
+    cab.type = 'lowpass';
+    cab.frequency.value = CAB_SIM_FREQUENCY;
+    cab.Q.value = CAB_SIM_Q;
+
+    // EQ filters
+    const filters = FREQUENCY_BANDS.map((band, i) =>
+      this.makePeakingFilter(ctx, band.frequency, eq.bands[i]),
+    );
 
     const master = ctx.createGain();
     master.gain.value = MASTER_GAIN;
 
-    distortion.connect(eqLow);
-    eqLow.connect(eqLowMid);
-    eqLowMid.connect(eqHighMid);
-    eqHighMid.connect(eqHigh);
-    eqHigh.connect(master);
+    // Chain: distortion → cab → filter[0] → ... → filter[n] → master → destination
+    distortion.connect(cab);
+    cab.connect(filters[0]);
+    for (let i = 0; i < filters.length - 1; i++) {
+      filters[i].connect(filters[i + 1]);
+    }
+    filters[filters.length - 1].connect(master);
     master.connect(ctx.destination);
 
-    this.activeNodes = [distortion, eqLow, eqLowMid, eqHighMid, eqHigh, master];
-
-    // Palm-muted E power chord chugging at ~140 BPM
-    const notes = [40, 40, 47, 40, 40, 40, 47, 52]; // E2, E2, B2, E2, E2, E2, B2, E3
-    const interval = RIFF_INTERVAL_MS;
+    this.activeNodes = [distortion, cab, ...filters, master];
 
     const playAt = (index: number) => {
-      if (index >= notes.length) {
+      if (index >= riff.notes.length) {
         this.stopTestRiff();
+        onEnd?.();
         return;
       }
 
-      const osc = ctx.createOscillator();
-      const env = ctx.createGain();
+      const note = riff.notes[index];
 
-      osc.type = 'sawtooth';
-      osc.frequency.value = midiToFrequency(notes[index]);
+      if (note >= 0) {
+        const osc = ctx.createOscillator();
+        const env = ctx.createGain();
 
-      env.gain.setValueAtTime(0, ctx.currentTime);
-      env.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.005);
-      env.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + 0.08);
+        osc.type = 'sawtooth';
+        osc.frequency.value = midiToFrequency(note);
 
-      osc.connect(env);
-      env.connect(distortion);
-      this.activeNodes.push(osc, env);
-      osc.onended = () => { osc.disconnect(); env.disconnect(); };
+        const duration = riff.noteDurationMs / 1000;
+        env.gain.setValueAtTime(0, ctx.currentTime);
+        env.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.008);
+        env.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + duration);
 
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.1);
+        osc.connect(env);
+        env.connect(distortion);
+        this.activeNodes.push(osc, env);
+        osc.onended = () => { osc.disconnect(); env.disconnect(); };
 
-      this.riffTimeout = setTimeout(() => playAt(index + 1), interval);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+      }
+
+      this.riffTimeout = setTimeout(() => playAt(index + 1), riff.intervalMs);
     };
 
     playAt(0);

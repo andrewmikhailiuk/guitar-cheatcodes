@@ -1,103 +1,105 @@
-<div class="p-4 max-w-2xl">
-  <!-- Frequency table -->
-  <table class="w-full text-sm mb-6 border-collapse">
-    <thead>
-      <tr class="border-b border-fret-line text-left">
-        <th class="py-2 pr-4 text-gray-400">{{ 'eq.frequency' | transloco }}</th>
-        <th class="py-2 pr-4 text-gray-400">{{ 'eq.effect' | transloco }}</th>
-        <th class="py-2 pr-4 text-gray-400">Death</th>
-        <th class="py-2 text-gray-400">Black</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (band of bands; track band.range) {
-        <tr class="border-b border-fret-line/30">
-          <td class="py-2 pr-4 font-mono text-xs">{{ band.range }}</td>
-          <td class="py-2 pr-4">{{ band.descriptionKey | transloco }}</td>
-          <td class="py-2 pr-4 font-mono text-xs">
-            {{ band.deathDb > 0 ? '+' : '' }}{{ band.deathDb }} dB
-          </td>
-          <td class="py-2 font-mono text-xs">
-            {{ band.blackDb > 0 ? '+' : '' }}{{ band.blackDb }} dB
-          </td>
-        </tr>
+<div class="p-4">
+  <!-- Two columns: sliders left, table right -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Left: sliders -->
+    <div class="space-y-4">
+      @for (band of bands; track band.frequency; let i = $index) {
+        <div class="flex items-center gap-4">
+          <label class="w-20 text-sm text-gray-400 font-mono">{{ band.label }}</label>
+          <input
+            type="range" min="-6" max="6" step="1"
+            [value]="eq().bands[i]"
+            (input)="updateBand(i, $event)"
+            class="flex-1 accent-note-root"
+          />
+          <span class="w-12 text-right font-mono text-xs">{{ eq().bands[i] }} dB</span>
+        </div>
       }
-    </tbody>
-  </table>
+      <div class="flex items-center gap-4">
+        <label class="w-20 text-sm text-gray-400">{{ 'eq.gain' | transloco }}</label>
+        <input
+          type="range" min="0" max="1" step="0.05"
+          [value]="eq().gain"
+          (input)="updateGain($event)"
+          class="flex-1 accent-note-root"
+        />
+        <span class="w-12 text-right font-mono text-xs">{{ (eq().gain * 100).toFixed(0) }}%</span>
+      </div>
+    </div>
 
-  <!-- EQ sliders -->
-  <div class="space-y-4 mb-6">
-    <div class="flex items-center gap-4">
-      <label class="w-28 text-sm text-gray-400">{{ 'eq.low' | transloco }}</label>
-      <input
-        type="range" min="-6" max="6" step="1"
-        [value]="eq().low"
-        (input)="updateBand('low', $event)"
-        class="flex-1 accent-note-root"
-      />
-      <span class="w-12 text-right font-mono text-xs">{{ eq().low }} dB</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <label class="w-28 text-sm text-gray-400">{{ 'eq.lowMid' | transloco }}</label>
-      <input
-        type="range" min="-6" max="6" step="1"
-        [value]="eq().lowMid"
-        (input)="updateBand('lowMid', $event)"
-        class="flex-1 accent-note-root"
-      />
-      <span class="w-12 text-right font-mono text-xs">{{ eq().lowMid }} dB</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <label class="w-28 text-sm text-gray-400">{{ 'eq.highMid' | transloco }}</label>
-      <input
-        type="range" min="-6" max="6" step="1"
-        [value]="eq().highMid"
-        (input)="updateBand('highMid', $event)"
-        class="flex-1 accent-note-root"
-      />
-      <span class="w-12 text-right font-mono text-xs">{{ eq().highMid }} dB</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <label class="w-28 text-sm text-gray-400">{{ 'eq.high' | transloco }}</label>
-      <input
-        type="range" min="-6" max="6" step="1"
-        [value]="eq().high"
-        (input)="updateBand('high', $event)"
-        class="flex-1 accent-note-root"
-      />
-      <span class="w-12 text-right font-mono text-xs">{{ eq().high }} dB</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <label class="w-28 text-sm text-gray-400">{{ 'eq.gain' | transloco }}</label>
-      <input
-        type="range" min="0" max="1" step="0.05"
-        [value]="eq().gain"
-        (input)="updateBand('gain', $event)"
-        class="flex-1 accent-note-root"
-      />
-      <span class="w-12 text-right font-mono text-xs">{{ (eq().gain * 100).toFixed(0) }}%</span>
+    <!-- Right: table aligned with sliders -->
+    <div class="space-y-4 self-start">
+      @for (band of bands; track band.frequency) {
+        <div class="flex items-center gap-4 text-sm">
+          <span class="font-mono text-xs text-gray-400 w-16">{{ band.label }}</span>
+          <span class="flex-1">{{ band.descriptionKey | transloco }}</span>
+          <span class="font-mono text-xs w-12 text-right">
+            {{ band.deathDb > 0 ? '+' : '' }}{{ band.deathDb }} dB
+          </span>
+          <span class="font-mono text-xs w-12 text-right">
+            {{ band.blackDb > 0 ? '+' : '' }}{{ band.blackDb }} dB
+          </span>
+        </div>
+      }
     </div>
   </div>
 
-  <!-- Presets + Play -->
+  <!-- Presets full width at bottom -->
   <div class="flex flex-wrap gap-3 items-center">
     @for (preset of presets; track preset.id) {
       <button
-        class="px-4 py-2 text-sm rounded border border-fret-line hover:bg-fret-line transition-colors"
+        class="px-4 py-2 text-sm rounded border transition-colors"
+        [class]="activePreset()?.id === preset.id
+          ? 'border-note-root text-note-root'
+          : 'border-fret-line hover:bg-fret-line'"
         (click)="applyPreset(preset.id)"
       >
         {{ preset.labelKey | transloco }}
       </button>
     }
-
-    <button
-      class="px-4 py-2 text-sm rounded border transition-colors ml-auto"
-      [class]="isPlaying()
-        ? 'border-note-root bg-note-root/20 text-note-root'
-        : 'border-fret-line hover:bg-fret-line'"
-      (click)="togglePlay()"
-    >
-      {{ isPlaying() ? ('eq.stop' | transloco) : ('eq.playRiff' | transloco) }}
-    </button>
+    <span class="ml-auto flex items-center gap-2">
+      @for (riff of riffs; track riff.id) {
+        <button
+          class="px-3 py-2 text-xs rounded border transition-colors"
+          [class]="activeRiff().id === riff.id
+            ? 'border-note-root/50 text-note-root'
+            : 'border-fret-line/50 text-gray-500 hover:border-fret-line'"
+          (click)="selectRiff(riff)"
+        >
+          {{ riff.labelKey | transloco }}
+        </button>
+      }
+      <button
+        class="px-4 py-2 text-sm rounded border transition-colors"
+        [class]="isPlaying()
+          ? 'border-note-root bg-note-root/20 text-note-root'
+          : 'border-fret-line hover:bg-fret-line'"
+        (click)="togglePlay()"
+      >
+        {{ isPlaying() ? ('eq.stop' | transloco) : ('eq.playRiff' | transloco) }}
+      </button>
+      <button
+        class="px-3 py-2 text-sm rounded border transition-colors"
+        [class]="looping()
+          ? 'border-note-root text-note-root'
+          : 'border-fret-line hover:bg-fret-line'"
+        (click)="looping.set(!looping())"
+        [title]="'eq.loop' | transloco"
+      >
+        &#x21BB;
+      </button>
+    </span>
   </div>
+
+  @if (activePreset(); as preset) {
+    <p class="text-sm text-gray-400 bg-fret-line/20 rounded px-3 py-2 mt-3 inline-block">
+      {{ preset.descriptionKey | transloco }}
+    </p>
+  }
+  @if (activeRiff(); as riff) {
+    <p class="text-sm text-gray-400 bg-fret-line/20 rounded px-3 py-2 mt-3 inline-block"
+       [class.ml-3]="activePreset()">
+      {{ riff.descriptionKey | transloco }}
+    </p>
+  }
 </div>

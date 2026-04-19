@@ -1,19 +1,18 @@
 export interface EqSettings {
-  low: number;
-  lowMid: number;
-  highMid: number;
-  high: number;
+  bands: number[];
   gain: number;
 }
 
 export interface EqPreset {
   id: string;
   labelKey: string;
+  descriptionKey: string;
   settings: EqSettings;
 }
 
 export interface FrequencyBand {
-  range: string;
+  frequency: number;
+  label: string;
   descriptionKey: string;
   deathDb: number;
   blackDb: number;
