@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EqSettings } from '../models/eq.model';
+import { FREQUENCY_BANDS } from '../data/eq-presets.data';
 import { midiToFrequency } from '../utils/music.utils';
 
 const GAIN_FLOOR = 0.001;
@@ -47,7 +48,7 @@ export class AudioService {
     osc.stop(ctx.currentTime + durationMs / 1000);
   }
 
-  playTestRiff(eq: EqSettings): void {
+  playTestRiff(eq: EqSettings, onEnd?: () => void): void {
     this.stopTestRiff();
 
     const ctx = this.getContext();
@@ -56,22 +57,22 @@ export class AudioService {
     const distortion = ctx.createWaveShaper();
     distortion.curve = this.makeDistortionCurve(eq.gain);
 
-    const eqLow = this.makePeakingFilter(ctx, 100, eq.low);
-    const eqLowMid = this.makePeakingFilter(ctx, 200, eq.lowMid);
-    const eqHighMid = this.makePeakingFilter(ctx, 3000, eq.highMid);
-    const eqHigh = this.makePeakingFilter(ctx, 6500, eq.high);
+    const filters = FREQUENCY_BANDS.map((band, i) =>
+      this.makePeakingFilter(ctx, band.frequency, eq.bands[i]),
+    );
 
     const master = ctx.createGain();
     master.gain.value = MASTER_GAIN;
 
-    distortion.connect(eqLow);
-    eqLow.connect(eqLowMid);
-    eqLowMid.connect(eqHighMid);
-    eqHighMid.connect(eqHigh);
-    eqHigh.connect(master);
+    // Chain: distortion → filter[0] → filter[1] → ... → filter[n] → master → destination
+    distortion.connect(filters[0]);
+    for (let i = 0; i < filters.length - 1; i++) {
+      filters[i].connect(filters[i + 1]);
+    }
+    filters[filters.length - 1].connect(master);
     master.connect(ctx.destination);
 
-    this.activeNodes = [distortion, eqLow, eqLowMid, eqHighMid, eqHigh, master];
+    this.activeNodes = [distortion, ...filters, master];
 
     // Palm-muted E power chord chugging at ~140 BPM
     const notes = [40, 40, 47, 40, 40, 40, 47, 52]; // E2, E2, B2, E2, E2, E2, B2, E3
@@ -80,6 +81,7 @@ export class AudioService {
     const playAt = (index: number) => {
       if (index >= notes.length) {
         this.stopTestRiff();
+        onEnd?.();
         return;
       }
 
