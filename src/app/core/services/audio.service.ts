@@ -2,6 +2,12 @@ import { Injectable } from '@angular/core';
 import { EqSettings } from '../models/eq.model';
 import { midiToFrequency } from '../utils/music.utils';
 
+const GAIN_FLOOR = 0.001;
+const MASTER_GAIN = 0.4;
+const RIFF_INTERVAL_MS = 107;
+const DISTORTION_CURVE_SAMPLES = 256;
+const DISTORTION_MULTIPLIER = 50;
+
 @Injectable({ providedIn: 'root' })
 export class AudioService {
   private ctx: AudioContext | null = null;
@@ -29,7 +35,7 @@ export class AudioService {
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(
-      0.001,
+      GAIN_FLOOR,
       ctx.currentTime + durationMs / 1000,
     );
 
@@ -56,7 +62,7 @@ export class AudioService {
     const eqHigh = this.makePeakingFilter(ctx, 6500, eq.high);
 
     const master = ctx.createGain();
-    master.gain.value = 0.4;
+    master.gain.value = MASTER_GAIN;
 
     distortion.connect(eqLow);
     eqLow.connect(eqLowMid);
@@ -69,7 +75,7 @@ export class AudioService {
 
     // Palm-muted E power chord chugging at ~140 BPM
     const notes = [40, 40, 47, 40, 40, 40, 47, 52]; // E2, E2, B2, E2, E2, E2, B2, E3
-    const interval = 107; // ~140 BPM 16th notes
+    const interval = RIFF_INTERVAL_MS;
 
     const playAt = (index: number) => {
       if (index >= notes.length) {
@@ -85,7 +91,7 @@ export class AudioService {
 
       env.gain.setValueAtTime(0, ctx.currentTime);
       env.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.005);
-      env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      env.gain.exponentialRampToValueAtTime(GAIN_FLOOR, ctx.currentTime + 0.08);
 
       osc.connect(env);
       env.connect(distortion);
@@ -130,12 +136,11 @@ export class AudioService {
   }
 
   private makeDistortionCurve(amount: number): Float32Array<ArrayBuffer> {
-    const samples = 256;
-    const curve = new Float32Array(samples) as Float32Array<ArrayBuffer>;
-    const k = amount * 50;
+    const curve = new Float32Array(DISTORTION_CURVE_SAMPLES) as Float32Array<ArrayBuffer>;
+    const k = amount * DISTORTION_MULTIPLIER;
 
-    for (let i = 0; i < samples; i++) {
-      const x = (i * 2) / samples - 1;
+    for (let i = 0; i < DISTORTION_CURVE_SAMPLES; i++) {
+      const x = (i * 2) / DISTORTION_CURVE_SAMPLES - 1;
       curve[i] = Math.tanh(k * x);
     }
 

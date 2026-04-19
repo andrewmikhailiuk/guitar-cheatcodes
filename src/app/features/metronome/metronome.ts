@@ -11,6 +11,16 @@ const TIME_SIGNATURES: TimeSignature[] = [
   [6, 8],
 ];
 
+const MS_PER_MINUTE = 60_000;
+const TAP_WINDOW_MS = 2000;
+const ACCENT_FREQ = 800;
+const NORMAL_FREQ = 600;
+const CLICK_DURATION = 0.03;
+const CLICK_GAIN = 0.5;
+const GAIN_FLOOR = 0.001;
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_MINUTE_EIGHTH = 30;
+
 @Component({
   selector: 'app-metronome',
   imports: [TranslocoModule],
@@ -52,25 +62,7 @@ const TIME_SIGNATURES: TimeSignature[] = [
       </div>
 
       <!-- Controls -->
-      <div class="flex flex-wrap gap-3 items-center justify-center mb-6">
-        <!-- Time signature -->
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">{{ 'metronome.timeSignature' | transloco }}</label>
-          <select
-            class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-            (change)="onTimeSignatureChange($event)"
-          >
-            @for (ts of timeSignatures; track ts) {
-              <option
-                [value]="ts[0] + '/' + ts[1]"
-                [selected]="ts[0] === timeSignature()[0] && ts[1] === timeSignature()[1]"
-              >
-                {{ ts[0] }}/{{ ts[1] }}
-              </option>
-            }
-          </select>
-        </div>
-
+      <div class="flex gap-3 items-center justify-center mb-4">
         <!-- Start/Stop -->
         <button
           class="px-6 py-2 text-sm rounded border transition-colors"
@@ -89,6 +81,24 @@ const TIME_SIGNATURES: TimeSignature[] = [
         >
           {{ 'metronome.tap' | transloco }}
         </button>
+      </div>
+
+      <!-- Time signature -->
+      <div class="flex items-center justify-center gap-2 mb-6">
+        <label class="text-xs text-gray-400">{{ 'metronome.timeSignature' | transloco }}</label>
+        <select
+          class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+          (change)="onTimeSignatureChange($event)"
+        >
+          @for (ts of timeSignatures; track ts) {
+            <option
+              [value]="ts[0] + '/' + ts[1]"
+              [selected]="ts[0] === timeSignature()[0] && ts[1] === timeSignature()[1]"
+            >
+              {{ ts[0] }}/{{ ts[1] }}
+            </option>
+          }
+        </select>
       </div>
     </div>
   `,
@@ -151,14 +161,14 @@ export class MetronomeComponent {
     const now = Date.now();
     this.tapTimes.push(now);
     // Keep only taps within last 2 seconds
-    this.tapTimes = this.tapTimes.filter((t) => now - t < 2000);
+    this.tapTimes = this.tapTimes.filter((t) => now - t < TAP_WINDOW_MS);
     if (this.tapTimes.length >= 2) {
       const intervals: number[] = [];
       for (let i = 1; i < this.tapTimes.length; i++) {
         intervals.push(this.tapTimes[i] - this.tapTimes[i - 1]);
       }
       const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-      const bpm = Math.round(60000 / avg);
+      const bpm = Math.round(MS_PER_MINUTE / avg);
       const clamped = Math.max(40, Math.min(240, bpm));
       this.bpm.set(clamped);
       this.storage.set('metronomeBpm', clamped);
@@ -211,17 +221,17 @@ export class MetronomeComponent {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.value = isAccent ? 800 : 600;
+    osc.frequency.value = isAccent ? ACCENT_FREQ : NORMAL_FREQ;
 
-    gain.gain.setValueAtTime(0.5, time);
-    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.03);
+    gain.gain.setValueAtTime(CLICK_GAIN, time);
+    gain.gain.exponentialRampToValueAtTime(GAIN_FLOOR, time + CLICK_DURATION);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
 
     osc.start(time);
-    osc.stop(time + 0.03);
+    osc.stop(time + CLICK_DURATION);
   }
 
   private advanceBeat(): void {
@@ -229,8 +239,8 @@ export class MetronomeComponent {
     const noteValue = this.timeSignature()[1];
     // For x/8 time signatures, each beat is an eighth note
     const secondsPerBeat = noteValue === 8
-      ? 30 / this.bpm()
-      : 60 / this.bpm();
+      ? SECONDS_PER_MINUTE_EIGHTH / this.bpm()
+      : SECONDS_PER_MINUTE / this.bpm();
 
     this.nextNoteTime += secondsPerBeat;
     this.currentBeatIndex = (this.currentBeatIndex + 1) % beatsPerMeasure;
