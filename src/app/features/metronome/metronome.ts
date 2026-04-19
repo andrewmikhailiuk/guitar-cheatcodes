@@ -62,25 +62,7 @@ const SECONDS_PER_MINUTE_EIGHTH = 30;
       </div>
 
       <!-- Controls -->
-      <div class="flex flex-wrap gap-3 items-center justify-center mb-6">
-        <!-- Time signature -->
-        <div>
-          <label class="block text-xs text-gray-400 mb-1">{{ 'metronome.timeSignature' | transloco }}</label>
-          <select
-            class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
-            (change)="onTimeSignatureChange($event)"
-          >
-            @for (ts of timeSignatures; track ts) {
-              <option
-                [value]="ts[0] + '/' + ts[1]"
-                [selected]="ts[0] === timeSignature()[0] && ts[1] === timeSignature()[1]"
-              >
-                {{ ts[0] }}/{{ ts[1] }}
-              </option>
-            }
-          </select>
-        </div>
-
+      <div class="flex gap-3 items-center justify-center mb-4">
         <!-- Start/Stop -->
         <button
           class="px-6 py-2 text-sm rounded border transition-colors"
@@ -99,6 +81,24 @@ const SECONDS_PER_MINUTE_EIGHTH = 30;
         >
           {{ 'metronome.tap' | transloco }}
         </button>
+      </div>
+
+      <!-- Time signature -->
+      <div class="flex items-center justify-center gap-2 mb-6">
+        <label class="text-xs text-gray-400">{{ 'metronome.timeSignature' | transloco }}</label>
+        <select
+          class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+          (change)="onTimeSignatureChange($event)"
+        >
+          @for (ts of timeSignatures; track ts) {
+            <option
+              [value]="ts[0] + '/' + ts[1]"
+              [selected]="ts[0] === timeSignature()[0] && ts[1] === timeSignature()[1]"
+            >
+              {{ ts[0] }}/{{ ts[1] }}
+            </option>
+          }
+        </select>
       </div>
     </div>
   `,
