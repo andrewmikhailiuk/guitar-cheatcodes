@@ -13,7 +13,15 @@ import { StorageService } from './core/services/storage.service';
   imports: [RouterOutlet, TranslocoModule, TabNavComponent, LanguageSwitcherComponent],
   template: `
     <header class="flex items-center justify-between px-4 py-3 border-b border-fret-line">
-      <h1 class="text-lg font-bold tracking-wide">{{ 'app.title' | transloco }}</h1>
+      <h1 class="text-lg font-bold tracking-wide flex items-center gap-2">
+        <svg class="size-6" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17.6,15.9 16.1,14.4 24.1,6.5 25.5,7.9"/>
+          <polygon points="26.2,8.7 23.3,5.8 27.7,2.9 29.1,4.3"/>
+          <polyline points="17.7,11.4 3.1,15.9 12.5,19.5 16.1,28.9 20.6,14.3"/>
+          <line x1="13.2" y1="15.9" x2="16.1" y2="18.8"/>
+        </svg>
+        {{ 'app.title' | transloco }}
+      </h1>
       <app-language-switcher />
     </header>
     <app-tab-nav />
