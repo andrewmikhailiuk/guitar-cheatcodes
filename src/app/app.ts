@@ -5,6 +5,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { filter } from 'rxjs';
 import { TabNavComponent } from './layout/tab-nav/tab-nav';
 import { LanguageSwitcherComponent } from './shared/language-switcher/language-switcher';
+import { SeoService } from './core/services/seo.service';
 import { StorageService } from './core/services/storage.service';
 
 @Component({
@@ -38,10 +39,13 @@ import { StorageService } from './core/services/storage.service';
 export class App implements OnInit {
   readonly currentYear = new Date().getFullYear();
   private readonly router = inject(Router);
+  private readonly seo = inject(SeoService);
   private readonly storage = inject(StorageService);
   private readonly swUpdate = inject(SwUpdate);
 
   ngOnInit(): void {
+    this.seo.init();
+
     const lastTab = this.storage.get<string>('lastTab', '');
     if (lastTab && this.router.url === '/scales') {
       this.router.navigateByUrl(lastTab);

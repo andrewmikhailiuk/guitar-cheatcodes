@@ -194,5 +194,27 @@
   },
   "language": {
     "switch": "RU"
+  },
+  "seo": {
+    "gammas": {
+      "title": "Scales & Modes — Guitar Cheatcodes",
+      "description": "Interactive guitar scale reference: major, minor, pentatonic, modes. Fretboard diagrams with box patterns."
+    },
+    "chords": {
+      "title": "Chord Diagrams — Guitar Cheatcodes",
+      "description": "Guitar chord library: major, minor, 7th, suspended, power chords. Visual diagrams with voicings."
+    },
+    "tunings": {
+      "title": "Guitar Tunings — Guitar Cheatcodes",
+      "description": "Standard, drop, and open tunings for 6 and 7-string guitars. Reference notes and intervals."
+    },
+    "eq": {
+      "title": "EQ Reference — Guitar Cheatcodes",
+      "description": "Guitar EQ frequency guide: find the right tone for metal, rock, and beyond. Interactive presets."
+    },
+    "metronome": {
+      "title": "Metronome — Guitar Cheatcodes",
+      "description": "Simple online metronome for guitar practice. Tap tempo, time signatures."
+    }
   }
 }
