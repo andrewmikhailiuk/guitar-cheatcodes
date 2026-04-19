@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Guitar Cheatcodes"
+    "title": "Guitar Cheatcodes",
+    "rateOnGithub": "Rate me on GitHub"
   },
   "tabs": {
     "gammas": "Scales",

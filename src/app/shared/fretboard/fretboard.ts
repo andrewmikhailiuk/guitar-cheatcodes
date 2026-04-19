@@ -48,7 +48,7 @@ export class FretboardComponent {
       case 'neutral':
         return 'var(--color-note-neutral)';
       case 'outOfBox':
-        return '#1a1a1a';
+        return 'var(--color-note-out-of-box)';
       case 'nonScale':
       default:
         return 'var(--color-note-non-scale)';
