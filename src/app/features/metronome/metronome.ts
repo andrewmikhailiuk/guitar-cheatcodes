@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, HostListener, inject, signal } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { AudioService } from '../../core/services/audio.service';
 import { StorageService } from '../../core/services/storage.service';
@@ -20,74 +20,77 @@ const CLICK_GAIN = 0.5;
 const GAIN_FLOOR = 0.001;
 const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_MINUTE_EIGHTH = 30;
+const ACCEL_INTERVAL_MS = 80;
+const ACCEL_THRESHOLD_MS = 400;
 
 @Component({
   selector: 'app-metronome',
   imports: [TranslocoModule],
   template: `
-    <div class="p-4 max-w-md mx-auto">
-      <!-- BPM display -->
-      <div class="text-center mb-6">
-        <div class="text-6xl font-mono font-bold text-text-primary tabular-nums">
-          {{ bpm() }}
-        </div>
-        <div class="text-sm text-gray-400 mt-1">{{ 'metronome.bpm' | transloco }}</div>
-      </div>
-
-      <!-- BPM slider -->
-      <div class="mb-6">
+    <div class="p-4 py-8 max-w-lg mx-auto flex flex-col gap-8">
+      <!-- BPM display with editable input -->
+      <div class="text-center">
         <input
-          type="range"
+          type="number"
           min="40"
           max="240"
-          step="1"
           [value]="bpm()"
-          (input)="onBpmInput($event)"
-          class="w-full accent-note-root"
+          (change)="onBpmDirectInput($event)"
+          class="w-full text-9xl font-mono font-bold text-text-primary tabular-nums leading-none
+                 text-center bg-transparent border-b border-fret-line focus:border-note-root
+                 focus:outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                 [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
         />
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
-          <span>40</span>
-          <span>240</span>
+        <div class="text-xs text-text-muted mt-1 uppercase tracking-wider">
+          {{ 'metronome.bpm' | transloco }}
         </div>
       </div>
 
-      <!-- Beat dots -->
-      <div class="flex justify-center gap-3 mb-6">
+      <!-- Beat indicators -->
+      <div class="flex justify-center gap-2.5">
         @for (beat of beatDots(); track beat) {
           <div
-            class="w-5 h-5 rounded-full transition-all duration-75"
+            class="w-4 h-4 rounded-full transition-all duration-75"
+            [class.scale-150]="currentBeat() === beat"
             [style.background-color]="beatColor(beat)"
           ></div>
         }
       </div>
 
-      <!-- Controls -->
-      <div class="flex gap-3 items-center justify-center mb-4">
-        <!-- Start/Stop -->
-        <button
-          class="px-6 py-2 text-sm rounded border transition-colors"
-          [class]="isPlaying()
-            ? 'border-note-root bg-note-root/20 text-note-root'
-            : 'border-fret-line hover:bg-fret-line'"
-          (click)="toggle()"
-        >
-          {{ isPlaying() ? ('metronome.stop' | transloco) : ('metronome.start' | transloco) }}
-        </button>
-
-        <!-- Tap tempo -->
-        <button
-          class="px-6 py-2 text-sm rounded border border-fret-line hover:bg-fret-line transition-colors"
-          (click)="tapTempo()"
-        >
-          {{ 'metronome.tap' | transloco }}
-        </button>
+      <!-- Slider with -/+ -->
+      <div>
+        <div class="flex items-center gap-2">
+          <button
+            class="w-9 h-9 shrink-0 rounded-full border border-fret-line text-text-secondary text-lg
+                   hover:bg-fret-line/30 active:bg-fret-line/50 transition-colors"
+            (click)="adjustBpm(-5)"
+          >&minus;</button>
+          <input
+            type="range"
+            min="40"
+            max="240"
+            step="1"
+            [value]="bpm()"
+            (input)="onBpmInput($event)"
+            class="flex-1 accent-note-root"
+          />
+          <button
+            class="w-9 h-9 shrink-0 rounded-full border border-fret-line text-text-secondary text-lg
+                   hover:bg-fret-line/30 active:bg-fret-line/50 transition-colors"
+            (click)="adjustBpm(5)"
+          >+</button>
+        </div>
+        <div class="flex justify-between text-xs text-text-muted mt-1 px-11">
+          <span>40</span>
+          <span>240</span>
+        </div>
       </div>
 
-      <!-- Time signature -->
-      <div class="flex items-center justify-center gap-2 mb-6">
-        <label class="text-xs text-gray-400">{{ 'metronome.timeSignature' | transloco }}</label>
+      <!-- Controls row: tap, play, time signature -->
+      <div class="flex items-center justify-center gap-5">
+        <!-- Time signature -->
         <select
-          class="bg-bg-fretboard text-text-primary border border-fret-line rounded px-3 py-2 text-sm"
+          class="bg-bg-fretboard text-text-primary border border-fret-line rounded-full px-3 py-1.5 text-sm text-center"
           (change)="onTimeSignatureChange($event)"
         >
           @for (ts of timeSignatures; track ts) {
@@ -99,6 +102,36 @@ const SECONDS_PER_MINUTE_EIGHTH = 30;
             </option>
           }
         </select>
+
+        <!-- Play / Stop -->
+        <button
+          class="relative w-14 h-14 rounded-full border-2 transition-colors flex items-center justify-center shrink-0"
+          [class]="isPlaying()
+            ? 'border-note-root text-note-root'
+            : 'border-fret-line text-text-secondary hover:border-text-muted'"
+          (click)="toggle()"
+        >
+          @if (isPlaying()) {
+            <span class="absolute inset-0 rounded-full border-2 border-note-root animate-ping opacity-20"></span>
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          } @else {
+            <svg class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+          }
+        </button>
+
+        <!-- Tap tempo -->
+        <button
+          class="px-4 py-1.5 text-sm rounded-full border border-fret-line
+                 hover:bg-fret-line/30 active:bg-fret-line/50 transition-colors"
+          (click)="tapTempo()"
+        >
+          {{ 'metronome.tap' | transloco }}*
+        </button>
+      </div>
+
+      <!-- Tap hint footnote -->
+      <div class="text-[10px] text-text-muted text-center">
+        *{{ 'metronome.tapHint' | transloco }}
       </div>
     </div>
   `,
@@ -127,9 +160,54 @@ export class MetronomeComponent {
   private readonly LOOKAHEAD = 0.1;
   private readonly SCHEDULE_FREQ = 25;
   private tapTimes: number[] = [];
+  private arrowHoldStart = 0;
+  private arrowRepeatTimer: ReturnType<typeof setInterval> | null = null;
+  private activeArrowDir: number = 0;
 
   constructor() {
-    this.destroyRef.onDestroy(() => this.stop());
+    this.destroyRef.onDestroy(() => {
+      this.stop();
+      this.clearArrowRepeat();
+    });
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(e: KeyboardEvent): void {
+    if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'SELECT') return;
+
+    if (e.code === 'Space') {
+      e.preventDefault();
+      this.toggle();
+      return;
+    }
+
+    const dir = (e.code === 'ArrowUp' || e.code === 'ArrowRight') ? 1
+              : (e.code === 'ArrowDown' || e.code === 'ArrowLeft') ? -1
+              : 0;
+    if (!dir || e.repeat) return;
+    e.preventDefault();
+
+    this.activeArrowDir = dir;
+    this.arrowHoldStart = Date.now();
+    this.adjustBpm(dir);
+
+    this.arrowRepeatTimer = setInterval(() => {
+      const held = Date.now() - this.arrowHoldStart;
+      const step = held > ACCEL_THRESHOLD_MS * 3 ? 10
+                 : held > ACCEL_THRESHOLD_MS ? 5
+                 : 1;
+      this.adjustBpm(this.activeArrowDir * step);
+    }, ACCEL_INTERVAL_MS);
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  onKeyUp(e: KeyboardEvent): void {
+    const dir = (e.code === 'ArrowUp' || e.code === 'ArrowRight') ? 1
+              : (e.code === 'ArrowDown' || e.code === 'ArrowLeft') ? -1
+              : 0;
+    if (dir && dir === this.activeArrowDir) {
+      this.clearArrowRepeat();
+    }
   }
 
   toggle(): void {
@@ -140,10 +218,25 @@ export class MetronomeComponent {
     }
   }
 
+  adjustBpm(delta: number): void {
+    const value = Math.max(40, Math.min(240, this.bpm() + delta));
+    this.bpm.set(value);
+    this.storage.set('metronomeBpm', value);
+  }
+
   onBpmInput(event: Event): void {
     const value = parseInt((event.target as HTMLInputElement).value, 10);
     this.bpm.set(value);
     this.storage.set('metronomeBpm', value);
+  }
+
+  onBpmDirectInput(event: Event): void {
+    const raw = parseInt((event.target as HTMLInputElement).value, 10);
+    if (isNaN(raw)) return;
+    const value = Math.max(40, Math.min(240, raw));
+    this.bpm.set(value);
+    this.storage.set('metronomeBpm', value);
+    (event.target as HTMLInputElement).value = String(value);
   }
 
   onTimeSignatureChange(event: Event): void {
@@ -181,6 +274,14 @@ export class MetronomeComponent {
     if (active) return 'var(--color-text-primary)';
     if (beat === 0) return 'var(--color-note-root-dim, rgba(255, 68, 68, 0.3))';
     return 'var(--color-fret-line)';
+  }
+
+  private clearArrowRepeat(): void {
+    if (this.arrowRepeatTimer !== null) {
+      clearInterval(this.arrowRepeatTimer);
+      this.arrowRepeatTimer = null;
+    }
+    this.activeArrowDir = 0;
   }
 
   private start(): void {

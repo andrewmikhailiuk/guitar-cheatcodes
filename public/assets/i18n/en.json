@@ -189,6 +189,7 @@
   "metronome": {
     "bpm": "BPM",
     "tap": "Tap",
+    "tapHint": "Tap the button rhythmically to detect tempo",
     "start": "Start",
     "stop": "Stop",
     "timeSignature": "Time"
