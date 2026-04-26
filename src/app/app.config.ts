@@ -10,16 +10,17 @@ import { provideTransloco } from '@jsverse/transloco';
 
 import { routes } from './app.routes';
 import { TranslocoHttpLoader } from './transloco-loader';
+import { LANGUAGE_CODES } from './shared/language-switcher/languages';
 
 function detectLanguage(): string {
   try {
     const stored = localStorage.getItem('gc_language');
-    if (stored) return stored;
+    if (stored && LANGUAGE_CODES.includes(stored)) return stored;
   } catch {
     // localStorage unavailable
   }
-  const browser = navigator.language.substring(0, 2);
-  return browser === 'ru' ? 'ru' : 'en';
+  const browser = navigator.language.substring(0, 2).toLowerCase();
+  return LANGUAGE_CODES.includes(browser) ? browser : 'en';
 }
 
 export const appConfig: ApplicationConfig = {
@@ -33,8 +34,9 @@ export const appConfig: ApplicationConfig = {
     }),
     provideTransloco({
       config: {
-        availableLangs: ['en', 'ru'],
+        availableLangs: [...LANGUAGE_CODES],
         defaultLang: detectLanguage(),
+        fallbackLang: 'en',
         reRenderOnLangChange: true,
         prodMode: !isDevMode(),
       },
