@@ -4,7 +4,7 @@ Hi, I made myself a cheat sheet for learning guitar and I'm happy to share it wi
 
 Feedback, PRs, and suggestions are very welcome.
 
-Available online: https://guitarcodes.paparoot.ru/
+Available online: https://guitarcodes.andrewmikhailiuk.com/
 
 
 ## Development server
