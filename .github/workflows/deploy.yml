@@ -31,10 +31,10 @@ jobs:
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }}" \
             dist/guitarcodes/browser/ \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/guitarcodes.paparoot.ru/public_html_build/
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/guitarcodes.andrewmikhailiuk.com/public_html_build/
 
       - name: Swap directories
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT || 22 }} \
             ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            'cd ~/guitarcodes.paparoot.ru && rm -rf public_html_old && mv public_html public_html_old && mv public_html_build public_html'
+            'cd ~/guitarcodes.andrewmikhailiuk.com && rm -rf public_html_old && mv public_html public_html_old && mv public_html_build public_html'
